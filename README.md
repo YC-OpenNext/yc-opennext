@@ -3,12 +3,13 @@
 <div align="center">
   <img src="https://yc-opennext.github.io/yc-opennext/favicon.svg" alt="YC-OpenNext Logo" width="100" height="100">
 
-  **Terraform Module for Deploying Next.js on Yandex Cloud**
+**Terraform Module for Deploying Next.js on Yandex Cloud**
 
-  [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://yc-opennext.github.io/yc-opennext)
-  [![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.5-purple)](https://www.terraform.io/)
-  [![Next.js](https://img.shields.io/badge/Next.js-12--15-black)](https://nextjs.org/)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://yc-opennext.github.io/yc-opennext)
+[![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.5-purple)](https://www.terraform.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-12--15-black)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 </div>
 
 ## 📖 Documentation
@@ -78,7 +79,7 @@ module.exports = {
     domains: ['your-domain.com'],
     formats: ['image/avif', 'image/webp'],
   },
-}
+};
 ```
 
 ### 4. Build and Deploy
@@ -159,22 +160,22 @@ output "cloudfront_distribution_id" {
 
 ### Required Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `app_name` | Application name | `"my-app"` |
+| Variable      | Description                    | Example        |
+| ------------- | ------------------------------ | -------------- |
+| `app_name`    | Application name               | `"my-app"`     |
 | `environment` | Environment (dev/staging/prod) | `"production"` |
-| `folder_id` | Yandex Cloud folder ID | `"b1g..."` |
+| `folder_id`   | Yandex Cloud folder ID         | `"b1g..."`     |
 
 ### Optional Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `domain_name` | Custom domain | `null` |
-| `enable_isr` | Enable ISR support | `true` |
-| `enable_cdn` | Enable CDN | `true` |
-| `function_memory` | Memory for functions (MB) | `512` |
-| `function_timeout` | Timeout (seconds) | `30` |
-| `node_version` | Node.js version | `"18"` |
+| Variable           | Description               | Default |
+| ------------------ | ------------------------- | ------- |
+| `domain_name`      | Custom domain             | `null`  |
+| `enable_isr`       | Enable ISR support        | `true`  |
+| `enable_cdn`       | Enable CDN                | `true`  |
+| `function_memory`  | Memory for functions (MB) | `512`   |
+| `function_timeout` | Timeout (seconds)         | `30`    |
+| `node_version`     | Node.js version           | `"18"`  |
 
 ## 🌟 Features
 
@@ -189,13 +190,13 @@ output "cloudfront_distribution_id" {
 
 ## 📊 Cost Comparison
 
-| Provider | Monthly Cost* | Setup Time |
-|----------|--------------|------------|
-| Vercel Pro | $20 + usage | 5 min |
-| YC-OpenNext | ~$7 + usage | 15 min |
-| Self-hosted | $50+ | Hours |
+| Provider    | Monthly Cost\* | Setup Time |
+| ----------- | -------------- | ---------- |
+| Vercel Pro  | $20 + usage    | 5 min      |
+| YC-OpenNext | ~$7 + usage    | 15 min     |
+| Self-hosted | $50+           | Hours      |
 
-*For typical Next.js app with ~100k requests/month
+\*For typical Next.js app with ~100k requests/month
 
 ## 🛠️ Advanced Configuration
 
@@ -270,6 +271,7 @@ module "nextjs_prod" {
 ## 📚 Examples
 
 ### E-commerce Store
+
 ```hcl
 module "store" {
   source = "github.com/yc-opennext/yc-opennext//terraform/modules/nextjs_yc"
@@ -291,6 +293,7 @@ module "store" {
 ```
 
 ### Blog with ISR
+
 ```hcl
 module "blog" {
   source = "github.com/yc-opennext/yc-opennext//terraform/modules/nextjs_yc"
@@ -307,6 +310,7 @@ module "blog" {
 ```
 
 ### SaaS Application
+
 ```hcl
 module "saas" {
   source = "github.com/yc-opennext/yc-opennext//terraform/modules/nextjs_yc"
@@ -332,18 +336,21 @@ module "saas" {
 ### Common Issues
 
 **Build fails with "Module not found"**
+
 ```bash
 # Ensure standalone output is enabled
 echo 'module.exports = { output: "standalone" }' >> next.config.js
 ```
 
 **Function timeouts**
+
 ```hcl
 # Increase timeout in Terraform
 function_timeout = 60  # up to 600 seconds
 ```
 
 **Cold starts are slow**
+
 ```hcl
 # Keep functions warm
 min_instances = 1
@@ -365,8 +372,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 <div align="center">
 
-  **Deploy Next.js to Yandex Cloud in minutes, not hours**
+**Deploy Next.js to Yandex Cloud in minutes, not hours**
 
-  [Get Started](https://yc-opennext.github.io/yc-opennext) • [Examples](https://github.com/yc-opennext/examples) • [Support](https://github.com/yc-opennext/yc-opennext/issues)
+[Get Started](https://yc-opennext.github.io/yc-opennext) • [Examples](https://github.com/yc-opennext/examples) • [Support](https://github.com/yc-opennext/yc-opennext/issues)
 
 </div>

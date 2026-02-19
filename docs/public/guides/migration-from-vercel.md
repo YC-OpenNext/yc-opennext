@@ -6,14 +6,14 @@ Comprehensive guide for migrating your Next.js application from Vercel to Yandex
 
 YC-OpenNext provides Vercel-like functionality on Yandex Cloud with these key differences:
 
-| Feature | Vercel | YC-OpenNext |
-|---------|--------|-------------|
-| **Deployment** | Git-based | CLI/Terraform |
-| **Edge Functions** | V8 Isolates | Node.js with polyfills |
-| **Analytics** | Built-in | Custom implementation |
-| **Preview URLs** | Automatic | Manual setup |
-| **Global CDN** | Included | Optional YC CDN |
-| **Pricing** | Per-seat + usage | Pay-as-you-go |
+| Feature            | Vercel           | YC-OpenNext            |
+| ------------------ | ---------------- | ---------------------- |
+| **Deployment**     | Git-based        | CLI/Terraform          |
+| **Edge Functions** | V8 Isolates      | Node.js with polyfills |
+| **Analytics**      | Built-in         | Custom implementation  |
+| **Preview URLs**   | Automatic        | Manual setup           |
+| **Global CDN**     | Included         | Optional YC CDN        |
+| **Pricing**        | Per-seat + usage | Pay-as-you-go          |
 
 ## Pre-Migration Checklist
 
@@ -62,6 +62,7 @@ vercel pull
 #### vercel.json → yc-opennext.config.js
 
 **Before (vercel.json):**
+
 ```json
 {
   "functions": {
@@ -72,9 +73,7 @@ vercel pull
   "headers": [
     {
       "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
+      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
     }
   ],
   "redirects": [
@@ -88,6 +87,7 @@ vercel pull
 ```
 
 **After (next.config.js):**
+
 ```javascript
 module.exports = {
   output: 'standalone',
@@ -96,11 +96,9 @@ module.exports = {
     return [
       {
         source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' }
-        ],
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
-    ]
+    ];
   },
 
   async redirects() {
@@ -110,9 +108,9 @@ module.exports = {
         destination: '/new-page',
         permanent: true,
       },
-    ]
+    ];
   },
-}
+};
 ```
 
 ### Environment Variables
@@ -138,6 +136,7 @@ BUILD_ID=your-build-id
 Replace Vercel-specific imports:
 
 **Before:**
+
 ```javascript
 // pages/api/og.js
 import { ImageResponse } from '@vercel/og';
@@ -148,6 +147,7 @@ export default function handler() {
 ```
 
 **After:**
+
 ```javascript
 // pages/api/og.js
 import { ImageResponse } from '@yc-opennext/og-image';
@@ -161,6 +161,7 @@ export default function handler() {
 #### Edge Runtime → Node.js
 
 **Before:**
+
 ```javascript
 // pages/api/edge.js
 export const config = {
@@ -173,6 +174,7 @@ export default function handler(request) {
 ```
 
 **After:**
+
 ```javascript
 // pages/api/edge.js
 // No edge runtime config needed
@@ -260,6 +262,7 @@ module "nextjs_app" {
 ### DNS Migration
 
 1. **Note current Vercel DNS settings:**
+
 ```bash
 # Get current DNS records
 dig app.example.com
@@ -267,6 +270,7 @@ dig www.app.example.com
 ```
 
 2. **Update DNS to point to YC:**
+
 ```bash
 # After deploying to YC, get the API Gateway domain
 terraform output api_gateway_domain
@@ -276,7 +280,7 @@ terraform output api_gateway_domain
 ```
 
 3. **SSL Certificates:**
-YC-OpenNext automatically provisions certificates via Certificate Manager.
+   YC-OpenNext automatically provisions certificates via Certificate Manager.
 
 ## Step 6: Deploy to YC
 
@@ -380,9 +384,11 @@ Vercel ISR → YC ISR works the same way:
 // pages/blog/[slug].js or app/blog/[slug]/page.js
 export async function getStaticProps() {
   return {
-    props: { /* ... */ },
+    props: {
+      /* ... */
+    },
     revalidate: 60, // Works identically
-  }
+  };
 }
 ```
 
@@ -392,12 +398,7 @@ export async function getStaticProps() {
 // No changes required for basic usage
 import Image from 'next/image';
 
-<Image
-  src="/hero.jpg"
-  width={1200}
-  height={600}
-  alt="Hero"
-/>
+<Image src="/hero.jpg" width={1200} height={600} alt="Hero" />;
 ```
 
 ### Middleware
@@ -437,6 +438,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 **Problem:** Using Vercel's managed databases.
 
 **Solution:**
+
 - Replace Vercel KV with YDB or Redis
 - Replace Vercel Postgres with YDB or Managed PostgreSQL
 
@@ -445,6 +447,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 **Problem:** No automatic preview deployments.
 
 **Solution:** Set up multiple environments:
+
 ```bash
 # Deploy preview
 terraform workspace new preview
@@ -456,6 +459,7 @@ terraform apply -var="env=preview" -var="build_id=pr-123"
 **Problem:** Vercel cron jobs need replacement.
 
 **Solution:** Use YC Cloud Functions with triggers:
+
 ```javascript
 // Create a separate function for cron
 export async function cronHandler() {
@@ -465,26 +469,28 @@ export async function cronHandler() {
 
 ## Performance Comparison
 
-| Metric | Vercel | YC-OpenNext | Notes |
-|--------|--------|-------------|-------|
-| **Cold Start** | 50-250ms | 100-500ms | Use prepared instances |
-| **Warm Response** | 10-50ms | 10-50ms | Comparable |
-| **Build Time** | 1-3 min | 2-4 min | Depends on app size |
-| **Deploy Time** | 30-60s | 60-120s | Terraform apply time |
-| **Max Timeout** | 5 min (Pro) | 10 min | YC has higher limit |
-| **Max Payload** | 4.5MB | 10MB | YC has higher limit |
+| Metric            | Vercel      | YC-OpenNext | Notes                  |
+| ----------------- | ----------- | ----------- | ---------------------- |
+| **Cold Start**    | 50-250ms    | 100-500ms   | Use prepared instances |
+| **Warm Response** | 10-50ms     | 10-50ms     | Comparable             |
+| **Build Time**    | 1-3 min     | 2-4 min     | Depends on app size    |
+| **Deploy Time**   | 30-60s      | 60-120s     | Terraform apply time   |
+| **Max Timeout**   | 5 min (Pro) | 10 min      | YC has higher limit    |
+| **Max Payload**   | 4.5MB       | 10MB        | YC has higher limit    |
 
 ## Cost Comparison
 
 Rough monthly estimates for a typical app:
 
 **Vercel Pro ($20/user + usage):**
+
 - Team of 3: $60
 - 1M requests: $40
 - Bandwidth: $40
 - **Total: ~$140/month**
 
 **YC-OpenNext (pay-as-you-go):**
+
 - Functions: $20
 - Storage: $5
 - API Gateway: $10

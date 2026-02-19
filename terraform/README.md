@@ -26,12 +26,15 @@ Infrastructure as Code for deploying Next.js applications to Yandex Cloud.
 ## Modules
 
 ### nextjs_yc
+
 Main module for deploying a Next.js application.
 
 ### core_security
+
 Security components: KMS, Lockbox, IAM roles.
 
 ### ydb_docapi
+
 YDB serverless database with DynamoDB-compatible API.
 
 ## Quick Start
@@ -79,6 +82,7 @@ terraform apply -var="build_id=v1"
 ## Environment Configuration
 
 ### Development
+
 ```bash
 cd envs/dev
 terraform init
@@ -86,6 +90,7 @@ terraform apply -var-file="terraform.tfvars"
 ```
 
 ### Production
+
 ```bash
 cd envs/prod
 terraform init
@@ -97,6 +102,7 @@ terraform apply -var-file="terraform.tfvars"
 All resources follow the pattern: `{app_name}-{env}-{resource_type}-{suffix}`
 
 Examples:
+
 - `myapp-prod-server-function`
 - `myapp-prod-assets-bucket`
 - `myapp-prod-api-gateway`
@@ -120,6 +126,7 @@ Examples:
 ## Monitoring
 
 Resources are tagged for monitoring:
+
 - `app`: Application name
 - `env`: Environment
 - `build_id`: Build identifier
@@ -128,19 +135,23 @@ Resources are tagged for monitoring:
 ## Troubleshooting
 
 ### Function Logs
+
 ```bash
 yc serverless function logs --name myapp-prod-server-function
 ```
 
 ### API Gateway Logs
+
 Check CloudWatch-compatible logs in YC Console.
 
 ### Storage Metrics
+
 Monitor via YC Console or API.
 
 ## Module Inputs
 
 See individual module READMEs for detailed input/output documentation:
+
 - [nextjs_yc](./modules/nextjs_yc/README.md)
 - [core_security](./modules/core_security/README.md)
 - [ydb_docapi](./modules/ydb_docapi/README.md)

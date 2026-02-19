@@ -21,7 +21,7 @@ export class ManifestGenerator {
     }
 
     // Check if build directory exists
-    if (!await fs.pathExists(buildDir)) {
+    if (!(await fs.pathExists(buildDir))) {
       throw new Error(`Build directory not found: ${buildDir}`);
     }
 
@@ -48,9 +48,9 @@ export class ManifestGenerator {
     // If no manifest exists, try to reconstruct from artifacts
     const capabilitiesPath = path.join(buildDir, 'capabilities.json');
 
-    if (!await fs.pathExists(capabilitiesPath)) {
+    if (!(await fs.pathExists(capabilitiesPath))) {
       throw new Error(
-        'No manifest or capabilities file found. Please run "yc-opennext build" first.'
+        'No manifest or capabilities file found. Please run "yc-opennext build" first.',
       );
     }
 
@@ -73,40 +73,46 @@ export class ManifestGenerator {
           localDir: path.join(buildDir, 'artifacts', 'assets'),
           bucketKeyPrefix: 'assets/${buildId}',
         },
-        server: capabilities.needsServer ? {
-          zipPath: path.join(buildDir, 'artifacts', 'server.zip'),
-          entry: 'index.handler',
-          env: {
-            NODE_ENV: 'production',
-          },
-        } : {
-          localDir: path.join(buildDir, 'artifacts', 'assets'),
-        },
-        image: capabilities.needsImage ? {
-          zipPath: path.join(buildDir, 'artifacts', 'image.zip'),
-          entry: 'image.handler',
-          env: {
-            NODE_ENV: 'production',
-          },
-        } : undefined,
+        server: capabilities.needsServer
+          ? {
+              zipPath: path.join(buildDir, 'artifacts', 'server.zip'),
+              entry: 'index.handler',
+              env: {
+                NODE_ENV: 'production',
+              },
+            }
+          : {
+              localDir: path.join(buildDir, 'artifacts', 'assets'),
+            },
+        image: capabilities.needsImage
+          ? {
+              zipPath: path.join(buildDir, 'artifacts', 'image.zip'),
+              entry: 'image.handler',
+              env: {
+                NODE_ENV: 'production',
+              },
+            }
+          : undefined,
       },
-      isr: capabilities.isr.enabled ? {
-        cache: {
-          bucketPrefix: 'cache/${buildId}',
-        },
-        ydb: {
-          tables: {
-            entries: 'isr_entries',
-            tags: 'isr_tags',
-            paths: 'isr_paths',
-            locks: 'isr_locks',
-          },
-        },
-        revalidate: {
-          endpointPath: '/api/__revalidate',
-          auth: 'hmac',
-        },
-      } : undefined,
+      isr: capabilities.isr.enabled
+        ? {
+            cache: {
+              bucketPrefix: 'cache/${buildId}',
+            },
+            ydb: {
+              tables: {
+                entries: 'isr_entries',
+                tags: 'isr_tags',
+                paths: 'isr_paths',
+                locks: 'isr_locks',
+              },
+            },
+            revalidate: {
+              endpointPath: '/api/__revalidate',
+              auth: 'hmac',
+            },
+          }
+        : undefined,
       environment: {
         variables: {},
         secrets: [],
@@ -119,11 +125,13 @@ export class ManifestGenerator {
             timeout: 30,
             preparedInstances: 0,
           },
-          image: capabilities.needsImage ? {
-            memory: 256,
-            timeout: 30,
-            preparedInstances: 0,
-          } : undefined,
+          image: capabilities.needsImage
+            ? {
+                memory: 256,
+                timeout: 30,
+                preparedInstances: 0,
+              }
+            : undefined,
         },
       },
     };

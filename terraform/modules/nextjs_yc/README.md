@@ -62,28 +62,28 @@ module "nextjs_app" {
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| app_name | Application name | string | - | yes |
-| env | Environment (dev, staging, production) | string | - | yes |
-| cloud_id | Yandex Cloud ID | string | - | yes |
-| folder_id | Yandex Cloud Folder ID | string | - | yes |
-| domain_name | Custom domain | string | - | yes |
-| build_id | Build identifier | string | - | yes |
-| manifest_path | Path to deployment manifest | string | - | yes |
-| enable_isr | Enable ISR | bool | true | no |
-| enable_cdn | Enable CDN | bool | false | no |
-| cache_ttl_days | Cache TTL in days | number | 30 | no |
+| Name           | Description                            | Type   | Default | Required |
+| -------------- | -------------------------------------- | ------ | ------- | -------- |
+| app_name       | Application name                       | string | -       | yes      |
+| env            | Environment (dev, staging, production) | string | -       | yes      |
+| cloud_id       | Yandex Cloud ID                        | string | -       | yes      |
+| folder_id      | Yandex Cloud Folder ID                 | string | -       | yes      |
+| domain_name    | Custom domain                          | string | -       | yes      |
+| build_id       | Build identifier                       | string | -       | yes      |
+| manifest_path  | Path to deployment manifest            | string | -       | yes      |
+| enable_isr     | Enable ISR                             | bool   | true    | no       |
+| enable_cdn     | Enable CDN                             | bool   | false   | no       |
+| cache_ttl_days | Cache TTL in days                      | number | 30      | no       |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| api_gateway_domain | API Gateway domain |
-| custom_domain | Custom domain name |
-| assets_bucket | Assets bucket name |
-| server_function_id | Server function ID |
-| deployment_info | Deployment metadata |
+| Name               | Description         |
+| ------------------ | ------------------- |
+| api_gateway_domain | API Gateway domain  |
+| custom_domain      | Custom domain name  |
+| assets_bucket      | Assets bucket name  |
+| server_function_id | Server function ID  |
+| deployment_info    | Deployment metadata |
 
 ## Deployment Flow
 
@@ -104,6 +104,7 @@ terraform apply -var="build_id=previous-build-id"
 ## Monitoring
 
 View function logs:
+
 ```bash
 yc serverless function logs --name my-app-prod-server-function --follow
 ```

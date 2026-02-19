@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import semver from 'semver';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import type { Capabilities } from '../manifest/schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -49,13 +50,8 @@ export class CompatibilityChecker {
   /**
    * Get feature compatibility for a specific Next.js version
    */
-  getFeatureCompatibility(
-    version: string,
-    feature: string
-  ): FeatureStatus | undefined {
-    const versionEntry = this.matrix.versions.find((v) =>
-      semver.satisfies(version, v.range)
-    );
+  getFeatureCompatibility(version: string, feature: string): FeatureStatus | undefined {
+    const versionEntry = this.matrix.versions.find((v) => semver.satisfies(version, v.range));
 
     if (!versionEntry) {
       return undefined;
@@ -68,9 +64,7 @@ export class CompatibilityChecker {
    * Get all features for a Next.js version
    */
   getAllFeatures(version: string): Record<string, FeatureStatus> | undefined {
-    const versionEntry = this.matrix.versions.find((v) =>
-      semver.satisfies(version, v.range)
-    );
+    const versionEntry = this.matrix.versions.find((v) => semver.satisfies(version, v.range));
 
     return versionEntry?.features;
   }
@@ -88,7 +82,7 @@ export class CompatibilityChecker {
       isr: boolean;
       revalidatePath: boolean;
       revalidateTag: boolean;
-    }
+    },
   ): {
     compatible: boolean;
     warnings: string[];
@@ -101,7 +95,7 @@ export class CompatibilityChecker {
       errors.push(
         `Next.js version ${nextVersion} is not supported. Supported ranges: ${this.matrix.versions
           .map((v) => v.range)
-          .join(', ')}`
+          .join(', ')}`,
       );
       return { compatible: false, warnings, errors };
     }
@@ -157,22 +151,20 @@ export class CompatibilityChecker {
 
         switch (status.status) {
           case 'unsupported':
-            errors.push(
-              `Feature '${check.name}' is not supported in Next.js ${nextVersion}`
-            );
+            errors.push(`Feature '${check.name}' is not supported in Next.js ${nextVersion}`);
             break;
           case 'partial':
             warnings.push(
               `Feature '${check.name}' has partial support in Next.js ${nextVersion}${
                 status.notes ? `: ${status.notes}` : ''
-              }`
+              }`,
             );
             break;
           case 'experimental':
             warnings.push(
               `Feature '${check.name}' is experimental in Next.js ${nextVersion}${
                 status.notes ? `: ${status.notes}` : ''
-              }`
+              }`,
             );
             break;
         }
@@ -182,7 +174,7 @@ export class CompatibilityChecker {
     // Add edge runtime warnings if middleware is enabled
     if (capabilities.middleware) {
       warnings.push(
-        'Middleware will run in edge-emulated mode. See documentation for behavioral differences vs Vercel Edge Runtime.'
+        'Middleware will run in edge-emulated mode. See documentation for behavioral differences vs Vercel Edge Runtime.',
       );
     }
 
@@ -190,6 +182,111 @@ export class CompatibilityChecker {
       compatible: errors.length === 0,
       warnings,
       errors,
+    };
+  }
+
+  /**
+   * Check compatibility from a full capabilities object
+   */
+  checkCompatibility(capabilities: Capabilities): {
+    compatible: boolean;
+    warnings: string[];
+    errors: string[];
+    notes: string[];
+  } {
+    const notes: string[] = [];
+    const nextVersion = capabilities.nextVersion;
+
+    // Delegate to checkCapabilities for core checks
+    // revalidatePath/revalidateTag are handled separately with version-specific logic
+    const result = this.checkCapabilities(nextVersion, {
+      appRouter: capabilities.appRouter,
+      pagesRouter: capabilities.pagesRouter,
+      middleware: capabilities.middleware.enabled,
+      serverActions: false,
+      isr: capabilities.isr.enabled,
+      revalidatePath: false,
+      revalidateTag: false,
+    });
+
+    // Additional checks based on full capabilities
+
+    // Check for App Router usage in versions that don't support it
+    if (capabilities.appRouter && semver.satisfies(nextVersion, '<13.0.0')) {
+      result.errors.push('App Router requires Next.js 13+');
+      result.compatible = false;
+    }
+
+    // Check for ISR tags in versions that don't support them
+    if (capabilities.isr.tags && semver.satisfies(nextVersion, '<13.0.0')) {
+      result.warnings.push('ISR tags require Next.js 13+');
+    }
+
+    // Check for mixed router usage
+    if (capabilities.appRouter && capabilities.pagesRouter) {
+      notes.push('Using both App Router and Pages Router');
+    }
+
+    // Check for static-only sites
+    if (!capabilities.needsServer) {
+      notes.push('Static site - no server functions needed');
+    }
+
+    // Check middleware mode
+    if (capabilities.middleware.enabled && capabilities.middleware.mode === 'node-fallback') {
+      result.warnings.push(
+        'Middleware in node-fallback mode may have different behavior than edge runtime',
+      );
+    }
+
+    return {
+      compatible: result.errors.length === 0,
+      warnings: result.warnings,
+      errors: result.errors,
+      notes,
+    };
+  }
+
+  /**
+   * Get simplified feature support for a Next.js version
+   */
+  getFeatureSupport(version: string): {
+    appRouter: boolean;
+    pagesRouter: boolean;
+    isr: boolean;
+    isrTags: boolean;
+    middleware: boolean;
+    serverActions: boolean;
+    partialPrerendering: boolean;
+    turbopack: boolean;
+  } {
+    const features = this.getAllFeatures(version);
+
+    const isSupported = (feature: string): boolean => {
+      const status = features?.[feature];
+      if (!status) return false;
+      return status.status === 'supported' || status.status === 'partial';
+    };
+
+    const isAvailable = (feature: string): boolean => {
+      const status = features?.[feature];
+      if (!status) return false;
+      return (
+        status.status === 'supported' ||
+        status.status === 'partial' ||
+        status.status === 'experimental'
+      );
+    };
+
+    return {
+      appRouter: isSupported('appRouter'),
+      pagesRouter: isSupported('pagesRouter'),
+      isr: isSupported('isr'),
+      isrTags: isSupported('revalidateTag'),
+      middleware: isSupported('middleware'),
+      serverActions: isAvailable('serverActions'),
+      partialPrerendering: isAvailable('ppr'),
+      turbopack: semver.satisfies(version, '>=15.0.0'),
     };
   }
 

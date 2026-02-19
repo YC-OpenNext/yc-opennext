@@ -71,9 +71,9 @@ const nextConfig = {
     domains: ['your-domain.com'],
     formats: ['image/avif', 'image/webp'],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
 ```
 
 ### Build your application

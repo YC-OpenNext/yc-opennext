@@ -46,7 +46,7 @@ export class Uploader {
 
     try {
       // Check if build directory exists
-      if (!await fs.pathExists(buildDir)) {
+      if (!(await fs.pathExists(buildDir))) {
         throw new Error(`Build directory not found: ${buildDir}`);
       }
 
@@ -59,7 +59,7 @@ export class Uploader {
           assetsBucket,
           `${prefix}/assets`,
           dryRun,
-          verbose
+          verbose,
         );
         spinner.succeed(`Uploaded ${assetFiles.length} asset files`);
       } else {
@@ -104,10 +104,7 @@ export class Uploader {
       if (cacheBucket) {
         spinner.start('Initializing cache bucket...');
         // Create cache directory structure
-        const cacheKeys = [
-          `${prefix}/cache/.initialized`,
-          `${prefix}/isr/.initialized`,
-        ];
+        const cacheKeys = [`${prefix}/cache/.initialized`, `${prefix}/isr/.initialized`];
 
         for (const key of cacheKeys) {
           if (!dryRun) {
@@ -117,7 +114,7 @@ export class Uploader {
                 Key: key,
                 Body: JSON.stringify({ timestamp: new Date().toISOString() }),
                 ContentType: 'application/json',
-              })
+              }),
             );
           }
         }
@@ -149,7 +146,7 @@ export class Uploader {
     bucket: string,
     s3Prefix: string,
     dryRun?: boolean,
-    verbose?: boolean
+    verbose?: boolean,
   ): Promise<string[]> {
     const files = await glob('**/*', {
       cwd: localDir,
@@ -179,11 +176,7 @@ export class Uploader {
   /**
    * Upload a single file
    */
-  private async uploadFile(
-    localPath: string,
-    bucket: string,
-    key: string
-  ): Promise<void> {
+  private async uploadFile(localPath: string, bucket: string, key: string): Promise<void> {
     const fileStream = fs.createReadStream(localPath);
 
     // Determine content type from file extension
@@ -250,7 +243,7 @@ export class Uploader {
       new ListObjectsV2Command({
         Bucket: bucket,
         Prefix: prefix,
-      })
+      }),
     );
 
     return (response.Contents || []).map((obj) => obj.Key!);

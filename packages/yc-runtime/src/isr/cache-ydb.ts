@@ -1,5 +1,21 @@
-import { Driver, getSACredentialsFromJson, IamAuthService, Session, TableDescription, Types } from 'ydb-sdk';
-import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  Driver,
+  getSACredentialsFromJson,
+  IamAuthService,
+  StaticCredentialsAuthService,
+  MetadataAuthService,
+  Session,
+  TableDescription,
+  Column,
+  Types,
+  TypedValues,
+} from 'ydb-sdk';
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import crypto from 'crypto';
 
@@ -71,7 +87,7 @@ export class ISRCache {
       this.ydbCredentials = {
         type: 'access-key',
         accessKeyId: ydbAccessKeyId,
-        secretAccessKey: ydbSecretAccessKey
+        secretAccessKey: ydbSecretAccessKey,
       };
     }
   }
@@ -83,19 +99,19 @@ export class ISRCache {
     if (this.ydbDriver) return;
 
     // Create auth service based on credentials type
-    let authService: IamAuthService;
+    let authService: IamAuthService | StaticCredentialsAuthService | MetadataAuthService;
     if (this.ydbCredentials?.type === 'service-account') {
       authService = new IamAuthService(getSACredentialsFromJson(this.ydbCredentials.json));
     } else if (this.ydbCredentials?.type === 'access-key') {
       // Use static credentials
-      authService = new IamAuthService({
-        accessKeyId: this.ydbCredentials.accessKeyId,
-        secretAccessKey: this.ydbCredentials.secretAccessKey,
-        endpoint: 'iam.api.cloud.yandex.net:443',
-      });
+      authService = new StaticCredentialsAuthService(
+        this.ydbCredentials.accessKeyId,
+        this.ydbCredentials.secretAccessKey,
+        'iam.api.cloud.yandex.net:443',
+      );
     } else {
       // Use metadata service (for functions running in Yandex Cloud)
-      authService = new IamAuthService();
+      authService = new MetadataAuthService();
     }
 
     this.ydbDriver = new Driver({
@@ -126,14 +142,16 @@ export class ISRCache {
         await session.createTable(
           entriesTable,
           new TableDescription()
-            .withColumn('pk', Types.UTF8, 'pk')  // Primary key
-            .withColumn('sk', Types.UTF8)        // Sort key
-            .withColumn('value', Types.JSON)     // Cache metadata
-            .withColumn('ttl', Types.UINT64)     // TTL timestamp
-            .withColumn('tags', Types.JSON)      // Tags array
-            .withColumn('lastModified', Types.UINT64)
-            .withColumn('revalidateAfter', Types.UINT64)
-            .withPrimaryKeys('pk', 'sk')
+            .withColumns(
+              new Column('pk', Types.UTF8),
+              new Column('sk', Types.UTF8),
+              new Column('value', Types.JSON),
+              new Column('ttl', Types.UINT64),
+              new Column('tags', Types.JSON),
+              new Column('lastModified', Types.UINT64),
+              new Column('revalidateAfter', Types.UINT64),
+            )
+            .withPrimaryKeys('pk', 'sk'),
         );
         console.log(`Created table: ${entriesTable}`);
       } catch (err: any) {
@@ -148,11 +166,13 @@ export class ISRCache {
         await session.createTable(
           tagsTable,
           new TableDescription()
-            .withColumn('tag', Types.UTF8, 'tag')  // Tag name
-            .withColumn('pk', Types.UTF8)          // Entry primary key
-            .withColumn('sk', Types.UTF8)          // Entry sort key
-            .withColumn('ttl', Types.UINT64)       // TTL timestamp
-            .withPrimaryKeys('tag', 'pk', 'sk')
+            .withColumns(
+              new Column('tag', Types.UTF8),
+              new Column('pk', Types.UTF8),
+              new Column('sk', Types.UTF8),
+              new Column('ttl', Types.UINT64),
+            )
+            .withPrimaryKeys('tag', 'pk', 'sk'),
         );
         console.log(`Created table: ${tagsTable}`);
       } catch (err: any) {
@@ -167,11 +187,13 @@ export class ISRCache {
         await session.createTable(
           locksTable,
           new TableDescription()
-            .withColumn('pk', Types.UTF8, 'pk')    // Lock key
-            .withColumn('locked', Types.BOOL)      // Lock status
-            .withColumn('lockedAt', Types.UINT64)  // Lock timestamp
-            .withColumn('ttl', Types.UINT64)       // TTL timestamp
-            .withPrimaryKeys('pk')
+            .withColumns(
+              new Column('pk', Types.UTF8),
+              new Column('locked', Types.BOOL),
+              new Column('lockedAt', Types.UINT64),
+              new Column('ttl', Types.UINT64),
+            )
+            .withPrimaryKeys('pk'),
         );
         console.log(`Created table: ${locksTable}`);
       } catch (err: any) {
@@ -206,7 +228,7 @@ export class ISRCache {
           new GetObjectCommand({
             Bucket: this.cacheBucket,
             Key: s3Key,
-          })
+          }),
         );
 
         if (response.Body) {
@@ -253,12 +275,13 @@ export class ISRCache {
 
       const preparedQuery = await session.prepareQuery(query);
       const result = await session.executeQuery(preparedQuery, {
-        '$pk': this.getCacheKey(key),
-        '$sk': 'metadata',
+        $pk: TypedValues.utf8(this.getCacheKey(key)),
+        $sk: TypedValues.utf8('metadata'),
       });
 
-      if (result.resultSets[0]?.rows?.length > 0) {
-        const row = result.resultSets[0].rows[0];
+      const resultSet = result.resultSets[0];
+      if (resultSet && resultSet.rows && resultSet.rows.length > 0) {
+        const row = resultSet.rows[0] as any;
         return JSON.parse(row.value);
       }
 
@@ -272,7 +295,7 @@ export class ISRCache {
   async set(
     key: string,
     entry: CacheEntry,
-    options?: { tags?: string[]; revalidate?: number }
+    options?: { tags?: string[]; revalidate?: number },
   ): Promise<void> {
     console.log('[ISR] Setting cache entry:', key);
 
@@ -290,7 +313,7 @@ export class ISRCache {
         headers: entry.metadata?.headers || {},
         status: entry.metadata?.status || 200,
         tags: options?.tags || entry.metadata?.tags || [],
-        revalidateAfter: entry.metadata?.revalidateAfter || (now + (options?.revalidate || 0) * 1000),
+        revalidateAfter: entry.metadata?.revalidateAfter || now + (options?.revalidate || 0) * 1000,
         lastModified: now,
       };
 
@@ -314,7 +337,7 @@ export class ISRCache {
               'x-cache-key': key,
               'x-build-id': this.buildId,
             },
-          })
+          }),
         );
       }
 
@@ -348,13 +371,13 @@ export class ISRCache {
 
       const preparedQuery = await session.prepareQuery(query);
       await session.executeQuery(preparedQuery, {
-        '$pk': this.getCacheKey(key),
-        '$sk': 'metadata',
-        '$value': JSON.stringify(metadata),
-        '$ttl': ttl,
-        '$tags': JSON.stringify(metadata.tags),
-        '$lastModified': metadata.lastModified,
-        '$revalidateAfter': metadata.revalidateAfter,
+        $pk: TypedValues.utf8(this.getCacheKey(key)),
+        $sk: TypedValues.utf8('metadata'),
+        $value: TypedValues.json(JSON.stringify(metadata)),
+        $ttl: TypedValues.uint64(ttl),
+        $tags: TypedValues.json(JSON.stringify(metadata.tags)),
+        $lastModified: TypedValues.uint64(metadata.lastModified),
+        $revalidateAfter: TypedValues.uint64(metadata.revalidateAfter),
       });
     });
   }
@@ -380,10 +403,10 @@ export class ISRCache {
 
         const preparedQuery = await session.prepareQuery(query);
         await session.executeQuery(preparedQuery, {
-          '$tag': tag,
-          '$pk': this.getCacheKey(key),
-          '$sk': 'metadata',
-          '$ttl': ttl,
+          $tag: TypedValues.utf8(tag),
+          $pk: TypedValues.utf8(this.getCacheKey(key)),
+          $sk: TypedValues.utf8('metadata'),
+          $ttl: TypedValues.uint64(ttl),
         });
       }
     });
@@ -407,7 +430,7 @@ export class ISRCache {
         new DeleteObjectCommand({
           Bucket: this.cacheBucket,
           Key: s3Key,
-        })
+        }),
       );
 
       console.log('[ISR] Cache entry deleted successfully');
@@ -435,8 +458,8 @@ export class ISRCache {
 
       const preparedEntryQuery = await session.prepareQuery(deleteEntryQuery);
       await session.executeQuery(preparedEntryQuery, {
-        '$pk': this.getCacheKey(key),
-        '$sk': 'metadata',
+        $pk: TypedValues.utf8(this.getCacheKey(key)),
+        $sk: TypedValues.utf8('metadata'),
       });
 
       // Delete from tags table
@@ -450,8 +473,8 @@ export class ISRCache {
 
       const preparedTagsQuery = await session.prepareQuery(deleteTagsQuery);
       await session.executeQuery(preparedTagsQuery, {
-        '$pk': this.getCacheKey(key),
-        '$sk': 'metadata',
+        $pk: TypedValues.utf8(this.getCacheKey(key)),
+        $sk: TypedValues.utf8('metadata'),
       });
     });
   }
@@ -479,11 +502,13 @@ export class ISRCache {
 
         const preparedQuery = await session.prepareQuery(query);
         const result = await session.executeQuery(preparedQuery, {
-          '$tag': tag,
+          $tag: TypedValues.utf8(tag),
         });
 
         // Delete each entry
-        for (const row of result.resultSets[0]?.rows || []) {
+        const rows = result.resultSets[0]?.rows || [];
+        for (const rowData of rows) {
+          const row = rowData as any;
           const deleteQuery = `
             DECLARE $pk AS Utf8;
             DECLARE $sk AS Utf8;
@@ -494,12 +519,15 @@ export class ISRCache {
 
           const preparedDeleteQuery = await session.prepareQuery(deleteQuery);
           await session.executeQuery(preparedDeleteQuery, {
-            '$pk': row.pk,
-            '$sk': row.sk,
+            $pk: TypedValues.utf8(row.pk),
+            $sk: TypedValues.utf8(row.sk),
           });
         }
 
-        console.log(`[ISR] Revalidated ${result.resultSets[0]?.rows?.length || 0} entries with tag:`, tag);
+        console.log(
+          `[ISR] Revalidated ${result.resultSets[0]?.rows?.length || 0} entries with tag:`,
+          tag,
+        );
       });
     } catch (error) {
       console.error('[ISR] Error revalidating tag:', error);

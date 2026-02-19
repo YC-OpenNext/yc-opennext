@@ -185,9 +185,54 @@ module.exports = nextConfig
     const serverDir = path.join(artifactsDir, 'server');
     await fs.ensureDir(serverDir);
 
-    // Copy runtime handler
+    // Copy runtime package files
     const runtimePath = path.join(serverDir, 'runtime');
     await fs.ensureDir(runtimePath);
+
+    // Find runtime package location
+    const runtimePackagePath = path.join(__dirname, '..', '..', '..', 'yc-runtime');
+    const runtimeSrcPath = path.join(runtimePackagePath, 'src');
+    const runtimeDistPath = path.join(runtimePackagePath, 'dist');
+
+    // Use dist if available (built), otherwise use src
+    const runtimeSource = await fs.pathExists(runtimeDistPath) ? runtimeDistPath : runtimeSrcPath;
+
+    if (await fs.pathExists(runtimeSource)) {
+      // Copy all runtime files
+      await fs.copy(runtimeSource, runtimePath);
+
+      // Also copy runtime dependencies
+      const runtimePkgJson = path.join(runtimePackagePath, 'package.json');
+      const runtimeNodeModules = path.join(runtimePackagePath, 'node_modules');
+
+      if (await fs.pathExists(runtimePkgJson)) {
+        // Copy package.json for reference
+        await fs.copy(runtimePkgJson, path.join(serverDir, 'runtime-package.json'));
+
+        // Copy essential runtime dependencies
+        const essentialDeps = [
+          '@aws-sdk/client-s3',
+          'cookie',
+          'crypto-js',
+          'node-fetch',
+          'sharp',
+          'undici',
+          'ydb-sdk'
+        ];
+
+        const nodeModulesDir = path.join(serverDir, 'node_modules');
+        await fs.ensureDir(nodeModulesDir);
+
+        for (const dep of essentialDeps) {
+          const depPath = path.join(runtimeNodeModules, dep);
+          if (await fs.pathExists(depPath)) {
+            await fs.copy(depPath, path.join(nodeModulesDir, dep));
+          }
+        }
+      }
+    } else {
+      console.warn('Runtime package not found, handlers may not work correctly');
+    }
 
     // Create server handler entry point
     const handlerCode = `
@@ -247,6 +292,54 @@ export const handler = createServerHandler({
     const imageDir = path.join(artifactsDir, 'image');
     await fs.ensureDir(imageDir);
 
+    // Copy runtime package files for image handler
+    const runtimePath = path.join(imageDir, 'runtime');
+    await fs.ensureDir(runtimePath);
+
+    // Find runtime package location
+    const runtimePackagePath = path.join(__dirname, '..', '..', '..', 'yc-runtime');
+    const runtimeSrcPath = path.join(runtimePackagePath, 'src');
+    const runtimeDistPath = path.join(runtimePackagePath, 'dist');
+
+    // Use dist if available (built), otherwise use src
+    const runtimeSource = await fs.pathExists(runtimeDistPath) ? runtimeDistPath : runtimeSrcPath;
+
+    if (await fs.pathExists(runtimeSource)) {
+      // Copy image-handler and dependencies
+      const filesToCopy = ['image-handler.js', 'image-handler.ts', 'index.js', 'index.ts'];
+      for (const file of filesToCopy) {
+        const filePath = path.join(runtimeSource, file);
+        if (await fs.pathExists(filePath)) {
+          await fs.copy(filePath, path.join(runtimePath, file));
+        }
+      }
+
+      // Copy storage module if exists (used by image handler)
+      const storagePath = path.join(runtimeSource, 'storage');
+      if (await fs.pathExists(storagePath)) {
+        await fs.copy(storagePath, path.join(runtimePath, 'storage'));
+      }
+
+      // Copy essential dependencies for image handling
+      const essentialDeps = [
+        '@aws-sdk/client-s3',
+        'sharp',
+        'undici',
+        'crypto-js'
+      ];
+
+      const runtimeNodeModules = path.join(runtimePackagePath, 'node_modules');
+      const nodeModulesDir = path.join(imageDir, 'node_modules');
+      await fs.ensureDir(nodeModulesDir);
+
+      for (const dep of essentialDeps) {
+        const depPath = path.join(runtimeNodeModules, dep);
+        if (await fs.pathExists(depPath)) {
+          await fs.copy(depPath, path.join(nodeModulesDir, dep));
+        }
+      }
+    }
+
     // Create image handler entry point
     const handlerCode = `
 import { createImageHandler } from './runtime/image-handler.js';
@@ -255,10 +348,7 @@ export const handler = createImageHandler({
   // Image optimization configuration
 });
 `;
-    await fs.writeFile(path.join(imageDir, 'image.js'), handlerCode);
-
-    // Copy runtime files (will be implemented with yc-runtime package)
-    // For now, create a placeholder
+    await fs.writeFile(path.join(imageDir, 'index.js'), handlerCode);
 
     // Create zip archive
     await this.createZipArchive(imageDir, path.join(artifactsDir, 'image.zip'));
@@ -417,7 +507,7 @@ export const handler = createImageHandler({
               type: 'object_storage',
               bucket: '${var.assets_bucket}',
               object: `assets/${buildId}/_next/static/{proxy}`,
-              serviceAccountId: '${var.service_account_id}',
+              service_account_id: '${var.service_account_id}',
             },
             parameters: [
               {
@@ -435,7 +525,7 @@ export const handler = createImageHandler({
               type: 'object_storage',
               bucket: '${var.assets_bucket}',
               object: `assets/${buildId}/public/{proxy}`,
-              serviceAccountId: '${var.service_account_id}',
+              service_account_id: '${var.service_account_id}',
             },
             parameters: [
               {
@@ -456,23 +546,44 @@ export const handler = createImageHandler({
         get: {
           'x-yc-apigateway-integration': {
             type: 'cloud_functions',
-            functionId: '${var.image_function_id}',
-            serviceAccountId: '${var.service_account_id}',
-            payloadFormatVersion: '1.0',
+            function_id: '${var.image_function_id}',
+            service_account_id: '${var.service_account_id}',
+            payload_format_version: '1.0',
           },
+          parameters: [
+            {
+              name: 'url',
+              in: 'query',
+              required: true,
+              schema: { type: 'string' },
+            },
+            {
+              name: 'w',
+              in: 'query',
+              required: false,
+              schema: { type: 'integer' },
+            },
+            {
+              name: 'q',
+              in: 'query',
+              required: false,
+              schema: { type: 'integer' },
+            },
+          ],
         },
       };
     }
 
-    // Add catch-all for server
+    // Add API routes and catch-all for server
     if (capabilities.needsServer) {
-      spec.paths['/{proxy+}'] = {
+      // API routes
+      spec.paths['/api/{proxy+}'] = {
         any: {
           'x-yc-apigateway-integration': {
             type: 'cloud_functions',
-            functionId: '${var.server_function_id}',
-            serviceAccountId: '${var.service_account_id}',
-            payloadFormatVersion: '1.0',
+            function_id: '${var.server_function_id}',
+            service_account_id: '${var.service_account_id}',
+            payload_format_version: '1.0',
           },
           parameters: [
             {
@@ -482,6 +593,38 @@ export const handler = createImageHandler({
               schema: { type: 'string' },
             },
           ],
+        },
+      };
+
+      // Catch-all for SSR
+      spec.paths['/{proxy+}'] = {
+        any: {
+          'x-yc-apigateway-integration': {
+            type: 'cloud_functions',
+            function_id: '${var.server_function_id}',
+            service_account_id: '${var.service_account_id}',
+            payload_format_version: '1.0',
+          },
+          parameters: [
+            {
+              name: 'proxy',
+              in: 'path',
+              required: false,
+              schema: { type: 'string' },
+            },
+          ],
+        },
+      };
+
+      // Root path
+      spec.paths['/'] = {
+        any: {
+          'x-yc-apigateway-integration': {
+            type: 'cloud_functions',
+            function_id: '${var.server_function_id}',
+            service_account_id: '${var.service_account_id}',
+            payload_format_version: '1.0',
+          },
         },
       };
     }

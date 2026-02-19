@@ -3,9 +3,9 @@ theme: null
 source: docs/public
 destination: _site
 include:
-  - "*.html"
-  - "*.md"
-  - "*.svg"
-  - "*.ico"
-  - "CNAME"
-  - ".nojekyll"
+  - '*.html'
+  - '*.md'
+  - '*.svg'
+  - '*.ico'
+  - 'CNAME'
+  - '.nojekyll'

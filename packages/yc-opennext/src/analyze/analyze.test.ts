@@ -2,15 +2,26 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Analyzer } from './index.js';
 import fs from 'fs-extra';
 import path from 'path';
+import { glob } from 'glob';
 
 vi.mock('fs-extra');
+vi.mock('glob');
+vi.mock('../compat/index.js', () => ({
+  CompatibilityChecker: vi.fn().mockImplementation(() => ({
+    checkCapabilities: vi.fn().mockReturnValue({
+      compatible: true,
+      warnings: [],
+      errors: [],
+    }),
+  })),
+}));
 
 describe('Analyzer', () => {
   let analyzer: Analyzer;
 
   beforeEach(() => {
-    analyzer = new Analyzer();
     vi.clearAllMocks();
+    analyzer = new Analyzer();
   });
 
   describe('detectNextVersion', () => {
@@ -28,9 +39,7 @@ describe('Analyzer', () => {
       const result = await analyzer['detectNextVersion'](projectPath);
 
       expect(result).toBe('14.2.0');
-      expect(fs.readJson).toHaveBeenCalledWith(
-        path.join(projectPath, 'package.json')
-      );
+      expect(fs.readJson).toHaveBeenCalledWith(path.join(projectPath, 'package.json'));
     });
 
     it('should handle version with caret', async () => {
@@ -55,9 +64,9 @@ describe('Analyzer', () => {
       vi.mocked(fs.pathExists).mockResolvedValue(true);
       vi.mocked(fs.readJson).mockResolvedValue(mockPackageJson);
 
-      await expect(
-        analyzer['detectNextVersion']('/test/project')
-      ).rejects.toThrow('Next.js not found in package.json dependencies');
+      await expect(analyzer['detectNextVersion']('/test/project')).rejects.toThrow(
+        'Next.js not found in package.json dependencies',
+      );
     });
   });
 
@@ -111,10 +120,7 @@ describe('Analyzer', () => {
       vi.mocked(fs.readJson).mockResolvedValue(mockManifest);
       vi.mocked(glob).mockResolvedValue([]);
 
-      const result = await analyzer['detectISR'](
-        '/test/project',
-        '/test/project/.next'
-      );
+      const result = await analyzer['detectISR']('/test/project', '/test/project/.next');
 
       expect(result.enabled).toBe(true);
     });
@@ -123,13 +129,10 @@ describe('Analyzer', () => {
       vi.mocked(fs.pathExists).mockResolvedValue(false);
       vi.mocked(glob).mockResolvedValue(['app/page.tsx']);
       vi.mocked(fs.readFile).mockResolvedValue(
-        'export default function Page() { revalidatePath("/"); }'
+        'export default function Page() { revalidatePath("/"); }',
       );
 
-      const result = await analyzer['detectISR'](
-        '/test/project',
-        '/test/project/.next'
-      );
+      const result = await analyzer['detectISR']('/test/project', '/test/project/.next');
 
       expect(result.paths).toBe(true);
       expect(result.onDemand).toBe(true);
@@ -182,7 +185,7 @@ describe('Analyzer', () => {
       expect(fs.writeJson).toHaveBeenCalledWith(
         path.join(outputDir, 'capabilities.json'),
         expect.any(Object),
-        { spaces: 2 }
+        { spaces: 2 },
       );
     });
   });

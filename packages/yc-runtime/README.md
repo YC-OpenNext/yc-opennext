@@ -92,21 +92,24 @@ const result = await runMiddleware({
 ## Environment Variables
 
 ### Required
+
 - `BUILD_ID` - Current build identifier
 - `NODE_ENV` - Node environment (production)
 
 ### Optional
+
 - `CACHE_BUCKET` - Object Storage bucket for cache
 - `ASSETS_BUCKET` - Object Storage bucket for static assets
 - `YDB_DOCAPI_ENDPOINT` - YDB Document API endpoint
 - `REVALIDATE_SECRET` - HMAC secret for revalidation
-- `DEBUG` - Debug logging (yc-opennext:*)
+- `DEBUG` - Debug logging (yc-opennext:\*)
 
 ## Edge Runtime Compatibility
 
 The middleware runner provides Edge Runtime emulation with these polyfills:
 
 ### Supported APIs
+
 - `Request`, `Response`, `Headers` (via undici)
 - `URL`, `URLSearchParams`
 - `TextEncoder`, `TextDecoder`
@@ -115,6 +118,7 @@ The middleware runner provides Edge Runtime emulation with these polyfills:
 - `crypto.randomUUID()`
 
 ### Differences from Vercel Edge
+
 - No V8 isolates (runs in Node.js process)
 - No 128KB code size limit
 - `crypto.subtle` partially supported
@@ -127,16 +131,19 @@ When unsupported APIs are detected, middleware automatically falls back to Node.
 ## Performance Optimization
 
 ### Cold Start Mitigation
+
 - Lazy loading of Next.js server
 - Optimized module imports
 - Minimal dependencies
 
 ### Caching Strategy
+
 - In-memory caching for hot paths
 - S3 cache for rendered pages
 - YDB for metadata and indices
 
 ### Memory Management
+
 - Stream processing for large responses
 - Efficient buffer handling
 - Garbage collection optimization
