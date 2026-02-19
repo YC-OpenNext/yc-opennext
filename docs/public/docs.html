@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - YC-OpenNext</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/docs.css">
+    <style>
+        .docs-hub-footer { margin-left: 0; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="15" fill="#1976d2"/>
+                    <text x="16" y="21" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">YC</text>
+                </svg>
+                YC-OpenNext
+            </a>
+            <ul class="nav-links">
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/#quickstart">Quick Start</a></li>
+                <li><a href="/docs.html" class="active">Documentation</a></li>
+                <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            </ul>
+            <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="docs-hero">
+        <h1>Documentation</h1>
+        <p>Everything you need to deploy and manage Next.js applications on Yandex Cloud</p>
+    </section>
+
+    <!-- Documentation Cards Grid -->
+    <div class="docs-grid">
+        <!-- Getting Started -->
+        <a href="/getting-started/installation.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <h3>Installation</h3>
+            <p>Set up YC-OpenNext and all required dependencies. System requirements, prerequisites, and platform-specific notes.</p>
+        </a>
+
+        <a href="/getting-started/quick-start.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h3>Quick Start</h3>
+            <p>Deploy your first Next.js application to Yandex Cloud. Step-by-step guide from configuration to live deployment.</p>
+        </a>
+
+        <!-- Core Guides -->
+        <a href="/deployment.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3>Deployment Guide</h3>
+            <p>Complete deployment workflows including blue-green deployments, staging environments, and production best practices.</p>
+        </a>
+
+        <a href="/guides/migration-from-vercel.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <h3>Migration from Vercel</h3>
+            <p>Comprehensive migration guide covering configuration changes, feature mapping, CI/CD setup, and cost comparison.</p>
+        </a>
+
+        <!-- Reference -->
+        <a href="/api/cli-commands.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-terminal"></i>
+            </div>
+            <h3>CLI Reference</h3>
+            <p>Complete reference for all YC-OpenNext CLI commands, options, configuration file format, and exit codes.</p>
+        </a>
+
+        <a href="/architecture.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <h3>Architecture</h3>
+            <p>System architecture overview including request flow, ISR caching, middleware execution, and security design.</p>
+        </a>
+
+        <!-- Examples & Troubleshooting -->
+        <a href="/examples/blog-with-isr.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <h3>Example: Blog with ISR</h3>
+            <p>Build a performant blog with Incremental Static Regeneration, on-demand revalidation, and tag-based cache invalidation.</p>
+        </a>
+
+        <a href="/reference/troubleshooting.html" class="doc-card">
+            <div class="doc-card-icon">
+                <i class="fas fa-wrench"></i>
+            </div>
+            <h3>Troubleshooting</h3>
+            <p>Common issues and solutions for build errors, deployment problems, runtime issues, ISR caching, and performance.</p>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="docs-hub-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Product</h3>
+                <ul class="footer-links">
+                    <li><a href="/#features">Features</a></li>
+                    <li><a href="/docs.html">Documentation</a></li>
+                    <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+                    <li><a href="/architecture.html">Architecture</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+                    <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+                    <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+                    <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Community</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+                    <li><a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank">Discussions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+    </script>
+</body>
+</html>

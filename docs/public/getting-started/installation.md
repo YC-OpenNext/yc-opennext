@@ -45,11 +45,13 @@ npm --version
 #### Using Package Managers
 
 **macOS (Homebrew):**
+
 ```bash
 brew install node@20
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
@@ -57,6 +59,7 @@ sudo apt-get install -y nodejs
 
 **Windows:**
 Download from [nodejs.org](https://nodejs.org) or use [Chocolatey](https://chocolatey.org):
+
 ```powershell
 choco install nodejs
 ```

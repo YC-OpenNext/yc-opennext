@@ -51,7 +51,7 @@ export interface NextResponse extends Response {
  * Run Next.js middleware in edge-emulated mode
  */
 export async function runMiddleware(
-  options: MiddlewareOptions
+  options: MiddlewareOptions,
 ): Promise<APIGatewayProxyResultV2 | null> {
   const { manifest, event, dir } = options;
 
@@ -74,7 +74,7 @@ export async function runMiddleware(
     const middlewareCode = fs.readFileSync(middlewarePath, 'utf-8');
 
     // Create edge-emulated environment
-    const { request, response } = createEdgeEnvironment(event);
+    const { request } = createEdgeEnvironment(event);
 
     // Execute middleware
     const result = await executeMiddleware(middlewareCode, request, middlewareEntry.matchers);
@@ -104,7 +104,6 @@ export async function runMiddleware(
  */
 function createEdgeEnvironment(event: APIGatewayProxyEventV2): {
   request: NextRequest;
-  response: typeof NextResponse;
 } {
   // Build URL
   const protocol = event.headers['x-forwarded-proto'] || 'https';
@@ -159,8 +158,8 @@ function createEdgeEnvironment(event: APIGatewayProxyEventV2): {
   };
 
   // Add IP address
-  request.ip = event.headers['x-forwarded-for']?.split(',')[0].trim() ||
-    event.requestContext.http.sourceIp;
+  request.ip =
+    event.headers['x-forwarded-for']?.split(',')[0].trim() || event.requestContext.http.sourceIp;
 
   // Create NextResponse class
   const NextResponseClass = class extends Response implements NextResponse {
@@ -195,7 +194,7 @@ function createEdgeEnvironment(event: APIGatewayProxyEventV2): {
     }
   };
 
-  return { request, response: NextResponseClass as any };
+  return { request };
 }
 
 /**
@@ -204,7 +203,7 @@ function createEdgeEnvironment(event: APIGatewayProxyEventV2): {
 async function executeMiddleware(
   code: string,
   request: NextRequest,
-  matchers?: any[]
+  matchers?: any[],
 ): Promise<Response | null> {
   // Check if request matches middleware patterns
   if (matchers && matchers.length > 0) {
@@ -342,7 +341,7 @@ function shouldFallbackToNode(error: any): boolean {
  * Run middleware in Node fallback mode
  */
 async function runMiddlewareInNodeMode(
-  options: MiddlewareOptions
+  options: MiddlewareOptions,
 ): Promise<APIGatewayProxyResultV2 | null> {
   console.log('[Middleware] Running in Node fallback mode');
 

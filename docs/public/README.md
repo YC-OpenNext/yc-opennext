@@ -5,28 +5,33 @@ Welcome to YC-OpenNext - a Vercel-like deployment platform for Next.js applicati
 ## 📚 Documentation Structure
 
 ### Getting Started
+
 - [Quick Start Guide](./getting-started/quick-start.md) - Deploy your first app in 5 minutes
 - [Installation](./getting-started/installation.md) - Set up YC-OpenNext
 - [Your First Deployment](./getting-started/first-deployment.md) - Step-by-step tutorial
 
 ### Guides
+
 - [Migration from Vercel](./guides/migration-from-vercel.md) - Move existing apps from Vercel
 - [Production Best Practices](./guides/production-best-practices.md) - Optimize for production
 - [CI/CD Integration](./guides/cicd-integration.md) - Automate deployments
 - [Multi-Environment Setup](./guides/multi-environment.md) - Dev, staging, and production
 
 ### API Reference
+
 - [CLI Commands](./api/cli-commands.md) - Complete CLI reference
 - [Configuration](./api/configuration.md) - All configuration options
 - [Manifest Schema](./api/manifest-schema.md) - Deployment manifest specification
 
 ### Examples
+
 - [Basic Next.js App](./examples/basic-nextjs.md)
 - [E-commerce Site](./examples/ecommerce.md)
 - [Blog with ISR](./examples/blog-with-isr.md)
 - [SaaS Application](./examples/saas-application.md)
 
 ### Reference
+
 - [Compatibility Matrix](./reference/compatibility.md) - Next.js version support
 - [Architecture](./reference/architecture.md) - Technical deep dive
 - [Limitations](./reference/limitations.md) - Known constraints
@@ -73,7 +78,7 @@ YC-OpenNext is perfect for:
 ## 🔄 Version Compatibility
 
 | YC-OpenNext | Next.js | Node.js | Terraform |
-|-------------|---------|---------|-----------|
+| ----------- | ------- | ------- | --------- |
 | 1.0.x       | 12-15   | 18+     | 1.5+      |
 
 ## 📝 License

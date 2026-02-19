@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CLI Command Reference - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/docs.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1976d2" />
+            <text
+              x="16"
+              y="21"
+              font-family="Arial"
+              font-size="14"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              YC
+            </text>
+          </svg>
+          YC-OpenNext
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#quickstart">Quick Start</a></li>
+          <li><a href="/docs.html" class="active">Documentation</a></li>
+          <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+        </ul>
+        <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </nav>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Getting Started</div>
+          <ul class="sidebar-links">
+            <li><a href="/getting-started/installation.html">Installation</a></li>
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Guides</div>
+          <ul class="sidebar-links">
+            <li><a href="/deployment.html">Deployment</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration from Vercel</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">API Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/api/cli-commands.html" class="active">CLI Commands</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Architecture</div>
+          <ul class="sidebar-links">
+            <li><a href="/architecture.html">System Architecture</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Examples</div>
+          <ul class="sidebar-links">
+            <li><a href="/examples/blog-with-isr.html">Blog with ISR</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <div class="docs-main">
+          <div class="breadcrumbs">
+            <a href="/docs.html">Docs</a>
+            <span class="separator">/</span>
+            <span>API Reference</span>
+            <span class="separator">/</span>
+            <span>CLI Commands</span>
+          </div>
+
+          <div class="page-header">
+            <h1>CLI Command Reference</h1>
+            <p class="subtitle">Complete reference for all YC-OpenNext CLI commands and options.</p>
+          </div>
+
+          <h2>Global Options</h2>
+
+          <p>Options available for all commands:</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Alias</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--help</code></td>
+                <td><code>-h</code></td>
+                <td>Show help message</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--version</code></td>
+                <td><code>-V</code></td>
+                <td>Show version number</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--verbose</code></td>
+                <td><code>-v</code></td>
+                <td>Enable verbose output</td>
+                <td><code>false</code></td>
+              </tr>
+              <tr>
+                <td><code>--quiet</code></td>
+                <td><code>-q</code></td>
+                <td>Suppress non-error output</td>
+                <td><code>false</code></td>
+              </tr>
+              <tr>
+                <td><code>--config</code></td>
+                <td><code>-c</code></td>
+                <td>Path to config file</td>
+                <td><code>yc-opennext.config.js</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Commands</h2>
+
+          <h3><code>yc-opennext analyze</code></h3>
+
+          <p>Analyze a Next.js project to detect capabilities and check compatibility.</p>
+
+          <pre><code class="language-bash">yc-opennext analyze [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--project &lt;path&gt;</code></td>
+                <td>Yes</td>
+                <td>Path to Next.js project</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--output &lt;dir&gt;</code></td>
+                <td>No</td>
+                <td>Output directory for analysis results</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--format &lt;type&gt;</code></td>
+                <td>No</td>
+                <td>Output format (json, yaml, table)</td>
+                <td><code>json</code></td>
+              </tr>
+              <tr>
+                <td><code>--strict</code></td>
+                <td>No</td>
+                <td>Fail on compatibility warnings</td>
+                <td><code>false</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Basic analysis
+yc-opennext analyze --project ./my-app
+
+# Save analysis results
+yc-opennext analyze --project ./my-app --output ./analysis
+
+# Table format output
+yc-opennext analyze --project ./my-app --format table
+
+# Strict mode (fail on warnings)
+yc-opennext analyze --project ./my-app --strict</code></pre>
+
+          <h4>Output</h4>
+
+          <p>The analyze command outputs a capabilities object:</p>
+
+          <pre><code class="language-json">{
+  "nextVersion": "14.2.0",
+  "appRouter": true,
+  "pagesRouter": false,
+  "needsServer": true,
+  "needsImage": true,
+  "isr": {
+    "enabled": true,
+    "onDemand": true,
+    "tags": true,
+    "paths": true
+  },
+  "middleware": {
+    "enabled": true,
+    "mode": "edge-emulated"
+  },
+  "notes": ["Middleware will run in edge-emulated mode"]
+}</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext build</code></h3>
+
+          <p>Build and package a Next.js application for Yandex Cloud deployment.</p>
+
+          <pre><code class="language-bash">yc-opennext build [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--project &lt;path&gt;</code></td>
+                <td>Yes</td>
+                <td>Path to Next.js project</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--output &lt;dir&gt;</code></td>
+                <td>Yes</td>
+                <td>Output directory for build artifacts</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--build-id &lt;id&gt;</code></td>
+                <td>No</td>
+                <td>Custom build identifier</td>
+                <td>Auto-generated</td>
+              </tr>
+              <tr>
+                <td><code>--standalone</code></td>
+                <td>No</td>
+                <td>Build in standalone mode</td>
+                <td><code>false</code></td>
+              </tr>
+              <tr>
+                <td><code>--skip-build</code></td>
+                <td>No</td>
+                <td>Skip Next.js build step</td>
+                <td><code>false</code></td>
+              </tr>
+              <tr>
+                <td><code>--minify</code></td>
+                <td>No</td>
+                <td>Minify function code</td>
+                <td><code>true</code></td>
+              </tr>
+              <tr>
+                <td><code>--split-chunks</code></td>
+                <td>No</td>
+                <td>Split large functions</td>
+                <td><code>false</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Basic build
+yc-opennext build --project ./my-app --output ./build
+
+# Standalone mode (recommended)
+yc-opennext build --project ./my-app --output ./build --standalone
+
+# Custom build ID
+yc-opennext build --project ./my-app --output ./build --build-id v1.2.3
+
+# Skip Next.js build (use existing .next)
+yc-opennext build --project ./my-app --output ./build --skip-build</code></pre>
+
+          <h4>Output Structure</h4>
+
+          <pre><code class="language-bash">build/
+├── artifacts/
+│   ├── server.zip       # Server function package
+│   ├── image.zip        # Image optimizer package
+│   └── assets/          # Static files
+│       ├── _next/static/
+│       └── public/
+├── deploy.manifest.json # Deployment configuration
+├── capabilities.json    # Detected capabilities
+└── openapi-template.json # API Gateway spec</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext upload</code></h3>
+
+          <p>Upload build artifacts to Yandex Cloud Object Storage.</p>
+
+          <pre><code class="language-bash">yc-opennext upload [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--build-dir &lt;dir&gt;</code></td>
+                <td>Yes</td>
+                <td>Directory containing build artifacts</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--bucket &lt;name&gt;</code></td>
+                <td>Yes</td>
+                <td>S3 bucket for assets</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--prefix &lt;prefix&gt;</code></td>
+                <td>Yes</td>
+                <td>S3 key prefix (build ID)</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--cache-bucket &lt;name&gt;</code></td>
+                <td>No</td>
+                <td>S3 bucket for ISR cache</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--region &lt;region&gt;</code></td>
+                <td>No</td>
+                <td>Yandex Cloud region</td>
+                <td><code>ru-central1</code></td>
+              </tr>
+              <tr>
+                <td><code>--endpoint &lt;url&gt;</code></td>
+                <td>No</td>
+                <td>S3 endpoint URL</td>
+                <td><code>https://storage.yandexcloud.net</code></td>
+              </tr>
+              <tr>
+                <td><code>--parallel &lt;n&gt;</code></td>
+                <td>No</td>
+                <td>Number of parallel uploads</td>
+                <td><code>4</code></td>
+              </tr>
+              <tr>
+                <td><code>--dry-run</code></td>
+                <td>No</td>
+                <td>Show what would be uploaded</td>
+                <td><code>false</code></td>
+              </tr>
+              <tr>
+                <td><code>--ignore &lt;pattern&gt;</code></td>
+                <td>No</td>
+                <td>Files to ignore (glob pattern)</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Basic upload
+yc-opennext upload \
+  --build-dir ./build \
+  --bucket my-app-assets \
+  --prefix v1
+
+# With cache bucket
+yc-opennext upload \
+  --build-dir ./build \
+  --bucket my-app-assets \
+  --cache-bucket my-app-cache \
+  --prefix v1
+
+# Dry run to preview
+yc-opennext upload \
+  --build-dir ./build \
+  --bucket my-app-assets \
+  --prefix v1 \
+  --dry-run
+
+# Parallel uploads
+yc-opennext upload \
+  --build-dir ./build \
+  --bucket my-app-assets \
+  --prefix v1 \
+  --parallel 10</code></pre>
+
+          <h4>Environment Variables</h4>
+
+          <p>The upload command requires AWS-compatible credentials:</p>
+
+          <pre><code class="language-bash">export AWS_ACCESS_KEY_ID=your_access_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext deploy-manifest</code></h3>
+
+          <p>Generate or update a deployment manifest from build artifacts.</p>
+
+          <pre><code class="language-bash">yc-opennext deploy-manifest [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--build-dir &lt;dir&gt;</code></td>
+                <td>Yes</td>
+                <td>Build artifacts directory</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--out &lt;path&gt;</code></td>
+                <td>Yes</td>
+                <td>Output manifest path</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--merge &lt;path&gt;</code></td>
+                <td>No</td>
+                <td>Existing manifest to merge</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--override &lt;json&gt;</code></td>
+                <td>No</td>
+                <td>JSON string with overrides</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Generate manifest
+yc-opennext deploy-manifest \
+  --build-dir ./build \
+  --out ./deploy.manifest.json
+
+# Merge with existing
+yc-opennext deploy-manifest \
+  --build-dir ./build \
+  --out ./deploy.manifest.json \
+  --merge ./previous.manifest.json
+
+# Override values
+yc-opennext deploy-manifest \
+  --build-dir ./build \
+  --out ./deploy.manifest.json \
+  --override '{"deployment":{"region":"ru-central1-b"}}'</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext plan</code></h3>
+
+          <p>Preview deployment without executing (shows what would be deployed).</p>
+
+          <pre><code class="language-bash">yc-opennext plan [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--project &lt;path&gt;</code></td>
+                <td>Yes</td>
+                <td>Path to Next.js project</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--compare &lt;version&gt;</code></td>
+                <td>No</td>
+                <td>Compare with previous version</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--cost-estimate</code></td>
+                <td>No</td>
+                <td>Show cost estimation</td>
+                <td><code>false</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Basic plan
+yc-opennext plan --project ./my-app
+
+# Compare with previous
+yc-opennext plan --project ./my-app --compare v1
+
+# With cost estimation
+yc-opennext plan --project ./my-app --cost-estimate</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext validate</code></h3>
+
+          <p>Validate configuration and deployment readiness.</p>
+
+          <pre><code class="language-bash">yc-opennext validate [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--manifest &lt;path&gt;</code></td>
+                <td>No</td>
+                <td>Manifest file to validate</td>
+                <td><code>deploy.manifest.json</code></td>
+              </tr>
+              <tr>
+                <td><code>--terraform &lt;dir&gt;</code></td>
+                <td>No</td>
+                <td>Terraform configuration to validate</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--bucket &lt;name&gt;</code></td>
+                <td>No</td>
+                <td>Verify bucket exists and is accessible</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Validate manifest
+yc-opennext validate --manifest ./deploy.manifest.json
+
+# Validate Terraform
+yc-opennext validate --terraform ./terraform
+
+# Validate bucket access
+yc-opennext validate --bucket my-app-assets</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext rollback</code></h3>
+
+          <p>Rollback to a previous deployment version.</p>
+
+          <pre><code class="language-bash">yc-opennext rollback [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--to &lt;version&gt;</code></td>
+                <td>Yes</td>
+                <td>Version to rollback to</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--terraform-dir &lt;dir&gt;</code></td>
+                <td>No</td>
+                <td>Terraform directory</td>
+                <td><code>./terraform</code></td>
+              </tr>
+              <tr>
+                <td><code>--auto-approve</code></td>
+                <td>No</td>
+                <td>Skip confirmation</td>
+                <td><code>false</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># Rollback to specific version
+yc-opennext rollback --to v1.2.2
+
+# Auto-approve rollback
+yc-opennext rollback --to v1.2.2 --auto-approve</code></pre>
+
+          <hr />
+
+          <h3><code>yc-opennext logs</code></h3>
+
+          <p>View function logs and metrics.</p>
+
+          <pre><code class="language-bash">yc-opennext logs [options]</code></pre>
+
+          <h4>Options</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Required</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--function &lt;name&gt;</code></td>
+                <td>No</td>
+                <td>Function name</td>
+                <td>All functions</td>
+              </tr>
+              <tr>
+                <td><code>--tail</code></td>
+                <td>No</td>
+                <td>Follow log output</td>
+                <td><code>false</code></td>
+              </tr>
+              <tr>
+                <td><code>--since &lt;time&gt;</code></td>
+                <td>No</td>
+                <td>Show logs since timestamp</td>
+                <td><code>1h</code></td>
+              </tr>
+              <tr>
+                <td><code>--filter &lt;pattern&gt;</code></td>
+                <td>No</td>
+                <td>Filter log entries</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Examples</h4>
+
+          <pre><code class="language-bash"># View all logs
+yc-opennext logs
+
+# Follow specific function
+yc-opennext logs --function server --tail
+
+# Logs from last 30 minutes
+yc-opennext logs --since 30m
+
+# Filter errors
+yc-opennext logs --filter ERROR</code></pre>
+
+          <hr />
+
+          <h2>Configuration File</h2>
+
+          <p>You can create a <code>yc-opennext.config.js</code> file to set default options:</p>
+
+          <pre><code class="language-javascript">module.exports = {
+  // Default project path
+  project: '.',
+
+  // Build defaults
+  build: {
+    output: './yc-build',
+    standalone: true,
+    minify: true,
+  },
+
+  // Upload defaults
+  upload: {
+    region: 'ru-central1',
+    endpoint: 'https://storage.yandexcloud.net',
+    parallel: 4,
+  },
+
+  // Function configuration
+  functions: {
+    server: {
+      memory: 1024,
+      timeout: 30,
+    },
+    image: {
+      memory: 512,
+      timeout: 30,
+    },
+  },
+
+  // Custom environment variables
+  env: {
+    DEBUG: 'yc-opennext:*',
+  },
+};</code></pre>
+
+          <h2>Exit Codes</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>0</code></td>
+                <td>Success</td>
+              </tr>
+              <tr>
+                <td><code>1</code></td>
+                <td>General error</td>
+              </tr>
+              <tr>
+                <td><code>2</code></td>
+                <td>Invalid arguments</td>
+              </tr>
+              <tr>
+                <td><code>3</code></td>
+                <td>Build failed</td>
+              </tr>
+              <tr>
+                <td><code>4</code></td>
+                <td>Upload failed</td>
+              </tr>
+              <tr>
+                <td><code>5</code></td>
+                <td>Validation failed</td>
+              </tr>
+              <tr>
+                <td><code>6</code></td>
+                <td>Compatibility error</td>
+              </tr>
+              <tr>
+                <td><code>7</code></td>
+                <td>Authentication error</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Debugging</h2>
+
+          <p>Enable debug output with environment variable:</p>
+
+          <pre><code class="language-bash">DEBUG=yc-opennext:* yc-opennext build --project .</code></pre>
+
+          <p>Debug specific components:</p>
+
+          <pre><code class="language-bash"># Debug analyzer only
+DEBUG=yc-opennext:analyzer yc-opennext analyze --project .
+
+# Debug builder only
+DEBUG=yc-opennext:builder yc-opennext build --project .
+
+# Debug uploader only
+DEBUG=yc-opennext:uploader yc-opennext upload --build-dir .</code></pre>
+
+          <h2>Shell Completion</h2>
+
+          <p>Enable tab completion for your shell:</p>
+
+          <pre><code class="language-bash"># Bash
+yc-opennext completion bash &gt; /etc/bash_completion.d/yc-opennext
+
+# Zsh
+yc-opennext completion zsh &gt; "${fpath[1]}/_yc-opennext"
+
+# Fish
+yc-opennext completion fish &gt; ~/.config/fish/completions/yc-opennext.fish</code></pre>
+
+          <!-- Previous/Next Navigation -->
+          <div class="page-nav">
+            <a href="/guides/migration-from-vercel.html" class="prev">
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">Migration from Vercel</span>
+            </a>
+            <a href="/architecture.html" class="next">
+              <span class="nav-label">Next</span>
+              <span class="nav-title">System Architecture</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/docs.html">Documentation</a></li>
+            <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            <li><a href="/architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+            <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul class="footer-links">
+            <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+      </div>
+    </footer>
+
+    <button
+      class="sidebar-toggle"
+      onclick="document.querySelector('.sidebar').classList.toggle('open')"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script>
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      });
+    </script>
+  </body>
+</html>

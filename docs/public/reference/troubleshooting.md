@@ -9,6 +9,7 @@ Common issues and solutions when deploying Next.js applications with YC-OpenNext
 **Cause:** The Next.js application hasn't been built before running YC-OpenNext.
 
 **Solution:**
+
 ```bash
 # Build Next.js first
 npm run build
@@ -24,6 +25,7 @@ yc-opennext build --project . --output ./yc-build
 **Cause:** Next.js is not installed or is in devDependencies.
 
 **Solution:**
+
 ```bash
 # Move Next.js to dependencies
 npm install next react react-dom
@@ -39,6 +41,7 @@ cat package.json | grep '"next"'
 **Cause:** Using a Next.js version not supported by YC-OpenNext.
 
 **Solution:**
+
 ```bash
 # Check supported versions
 yc-opennext analyze --project . --verbose
@@ -56,14 +59,16 @@ npm install next@14
 **Solution:**
 
 1. Enable standalone mode:
+
 ```javascript
 // next.config.js
 module.exports = {
   output: 'standalone',
-}
+};
 ```
 
 2. Optimize dependencies:
+
 ```bash
 # Analyze bundle
 npm run build -- --analyze
@@ -73,6 +78,7 @@ npm prune --production
 ```
 
 3. Use dynamic imports:
+
 ```javascript
 // Instead of
 import HeavyComponent from './HeavyComponent';
@@ -88,6 +94,7 @@ const HeavyComponent = dynamic(() => import('./HeavyComponent'));
 **Cause:** Invalid or missing AWS credentials for Object Storage.
 
 **Solution:**
+
 ```bash
 # Check credentials
 echo $AWS_ACCESS_KEY_ID
@@ -106,6 +113,7 @@ export AWS_SECRET_ACCESS_KEY=$(cat keys.json | jq -r .secret)
 **Cause:** Object Storage bucket hasn't been created.
 
 **Solution:**
+
 ```bash
 # Create buckets
 yc storage bucket create --name my-app-assets
@@ -122,6 +130,7 @@ yc storage bucket list
 **Cause:** Yandex Cloud provider not configured.
 
 **Solution:**
+
 ```bash
 # Option 1: Use service account key
 export YC_SERVICE_ACCOUNT_KEY_FILE=./sa-key.json
@@ -144,24 +153,27 @@ terraform plan
 **Solution:**
 
 1. Check function deployment:
+
 ```bash
 yc serverless function list
 yc serverless function version list --function-name my-app-server
 ```
 
 2. Verify API Gateway spec:
+
 ```bash
 yc api-gateway get --name my-app-gateway
 ```
 
 3. Check routing in OpenAPI spec:
+
 ```yaml
 paths:
   /{proxy+}:
     any:
       x-yc-apigateway-integration:
         type: cloud_functions
-        function_id: ${function_id}  # Must be valid
+        function_id: ${function_id} # Must be valid
 ```
 
 ## Runtime Issues
@@ -173,6 +185,7 @@ paths:
 **Solution:**
 
 1. Increase timeout in Terraform:
+
 ```hcl
 function_timeout = {
   server = 60  # Increase to 60 seconds
@@ -181,15 +194,14 @@ function_timeout = {
 ```
 
 2. Optimize slow operations:
+
 ```javascript
 // Use caching for expensive operations
 import { unstable_cache } from 'next/cache';
 
-const getCachedData = unstable_cache(
-  async () => fetchExpensiveData(),
-  ['cache-key'],
-  { revalidate: 3600 }
-);
+const getCachedData = unstable_cache(async () => fetchExpensiveData(), ['cache-key'], {
+  revalidate: 3600,
+});
 ```
 
 ---
@@ -201,6 +213,7 @@ const getCachedData = unstable_cache(
 **Solution:**
 
 1. Increase memory allocation:
+
 ```hcl
 function_memory = {
   server = 1024  # Increase to 1GB
@@ -209,12 +222,14 @@ function_memory = {
 ```
 
 2. Profile memory usage:
+
 ```javascript
 // Add memory logging
 console.log('Memory usage:', process.memoryUsage());
 ```
 
 3. Fix memory leaks:
+
 ```javascript
 // Clear large objects when done
 let largeData = await fetchData();
@@ -231,6 +246,7 @@ largeData = null; // Clear reference
 **Solution:**
 
 1. Enable prepared instances:
+
 ```hcl
 prepared_instances = {
   server = 2  # Keep 2 warm instances
@@ -239,6 +255,7 @@ prepared_instances = {
 ```
 
 2. Optimize initialization:
+
 ```javascript
 // Lazy load heavy modules
 let heavyModule;
@@ -261,6 +278,7 @@ function getHeavyModule() {
 **Solution:**
 
 1. Check YDB connection:
+
 ```bash
 # Verify YDB is accessible
 yc ydb database get --name my-app-db
@@ -270,6 +288,7 @@ yc ydb table list --database-name my-app-db
 ```
 
 2. Verify revalidation endpoint:
+
 ```bash
 # Test revalidation
 curl -X POST https://your-app.com/api/revalidate \
@@ -278,6 +297,7 @@ curl -X POST https://your-app.com/api/revalidate \
 ```
 
 3. Check cache bucket:
+
 ```bash
 # List cached files
 yc storage s3 ls s3://my-cache-bucket/cache/
@@ -292,17 +312,21 @@ yc storage s3 ls s3://my-cache-bucket/cache/
 **Solution:**
 
 1. Verify tag storage:
+
 ```javascript
 // Ensure tags are set during generation
 export async function generateStaticParams() {
   return {
-    props: { /* ... */ },
+    props: {
+      /* ... */
+    },
     tags: ['blog', 'tech'], // Add tags
   };
 }
 ```
 
 2. Check YDB tag table:
+
 ```bash
 # Query tag mappings
 yc ydb table query execute \
@@ -319,6 +343,7 @@ yc ydb table query execute \
 **Solution:**
 
 1. Check middleware location:
+
 ```bash
 # Must be at root or src root
 ls -la middleware.{js,ts}
@@ -326,12 +351,14 @@ ls -la src/middleware.{js,ts}
 ```
 
 2. Verify middleware manifest:
+
 ```bash
 # Check build output
 cat .next/server/middleware-manifest.json
 ```
 
 3. Check middleware matcher:
+
 ```javascript
 // middleware.js
 export const config = {
@@ -351,15 +378,17 @@ export const config = {
 **Solution:**
 
 1. Use supported APIs only:
+
 ```javascript
 // ✅ Supported
-Request, Response, Headers, URL, URLSearchParams, fetch
+(Request, Response, Headers, URL, URLSearchParams, fetch);
 
 // ❌ Not supported (use alternatives)
 // Edge-specific APIs like crypto.subtle may have limitations
 ```
 
 2. Enable Node fallback mode:
+
 ```javascript
 // Force Node.js mode if needed
 export const config = {
@@ -376,6 +405,7 @@ export const config = {
 **Solution:**
 
 1. Configure image domains:
+
 ```javascript
 // next.config.js
 module.exports = {
@@ -393,6 +423,7 @@ module.exports = {
 ```
 
 2. Check image function logs:
+
 ```bash
 yc serverless function logs --name my-app-image-function
 ```
@@ -404,6 +435,7 @@ yc serverless function logs --name my-app-image-function
 **Solution:**
 
 1. Enable image caching:
+
 ```javascript
 // Use cache headers
 <Image
@@ -417,6 +449,7 @@ yc serverless function logs --name my-app-image-function
 ```
 
 2. Optimize source images:
+
 ```bash
 # Pre-optimize images during build
 npm install --save-dev @squoosh/cli
@@ -430,6 +463,7 @@ squoosh-cli --resize '{width:1920}' --webp '{quality:80}' ./public/images/*
 **Solution:**
 
 1. Verify DNS records:
+
 ```bash
 # Check DNS propagation
 dig your-domain.com
@@ -449,11 +483,13 @@ terraform output api_gateway_domain
 **Solution:**
 
 1. Check certificate status:
+
 ```bash
 yc certificate-manager certificate get --name my-app-cert
 ```
 
 2. Verify DNS validation records:
+
 ```bash
 # Get validation records
 yc certificate-manager certificate get --name my-app-cert \
@@ -467,6 +503,7 @@ yc certificate-manager certificate get --name my-app-cert \
 ### Slow Response Times
 
 **Diagnosis:**
+
 ```bash
 # Check function duration
 yc serverless function list-operations --function-name my-app-server
@@ -488,6 +525,7 @@ yc monitoring dashboard get --name my-app-dashboard
 ### High Costs
 
 **Analysis:**
+
 ```bash
 # Check usage
 yc billing account get --id YOUR_BILLING_ACCOUNT_ID
@@ -497,6 +535,7 @@ yc serverless function get --name my-app-server
 ```
 
 **Optimization:**
+
 1. Reduce function memory if overprovisioned
 2. Implement aggressive caching
 3. Use lifecycle policies for storage
@@ -524,6 +563,7 @@ environment = {
 If you can't resolve an issue:
 
 1. **Search existing issues:**
+
    ```bash
    https://github.com/yc-opennext/yc-opennext/issues
    ```
@@ -541,15 +581,15 @@ If you can't resolve an issue:
 
 ## Common Error Codes
 
-| Code | Description | Solution |
-|------|-------------|----------|
-| `ENOENT` | File not found | Check file paths and build output |
-| `EACCES` | Permission denied | Check IAM roles and permissions |
-| `ETIMEDOUT` | Operation timeout | Increase timeouts or optimize code |
-| `ENOMEM` | Out of memory | Increase function memory |
-| `ENOTFOUND` | DNS lookup failed | Check network and endpoints |
-| `413` | Payload too large | Reduce request size or use streaming |
-| `429` | Too many requests | Implement rate limiting or scaling |
-| `500` | Internal server error | Check function logs for details |
-| `502` | Bad gateway | Check function health and configuration |
-| `503` | Service unavailable | Check quotas and limits |
+| Code        | Description           | Solution                                |
+| ----------- | --------------------- | --------------------------------------- |
+| `ENOENT`    | File not found        | Check file paths and build output       |
+| `EACCES`    | Permission denied     | Check IAM roles and permissions         |
+| `ETIMEDOUT` | Operation timeout     | Increase timeouts or optimize code      |
+| `ENOMEM`    | Out of memory         | Increase function memory                |
+| `ENOTFOUND` | DNS lookup failed     | Check network and endpoints             |
+| `413`       | Payload too large     | Reduce request size or use streaming    |
+| `429`       | Too many requests     | Implement rate limiting or scaling      |
+| `500`       | Internal server error | Check function logs for details         |
+| `502`       | Bad gateway           | Check function health and configuration |
+| `503`       | Service unavailable   | Check quotas and limits                 |

@@ -5,6 +5,11 @@ import { Capabilities } from '../manifest/schema.js';
 import { CompatibilityChecker } from '../compat/index.js';
 import chalk from 'chalk';
 
+/**
+ * Type alias for analyze capabilities (same as deployment Capabilities)
+ */
+export type AnalyzeCapabilities = Capabilities;
+
 export interface AnalyzeOptions {
   projectPath: string;
   outputDir?: string;
@@ -29,7 +34,7 @@ export class Analyzer {
     }
 
     // Check if project exists
-    if (!await fs.pathExists(projectPath)) {
+    if (!(await fs.pathExists(projectPath))) {
       throw new Error(`Project path does not exist: ${projectPath}`);
     }
 
@@ -41,21 +46,15 @@ export class Analyzer {
 
     // Check if .next build directory exists
     const buildPath = path.join(projectPath, '.next');
-    if (!await fs.pathExists(buildPath)) {
-      throw new Error(
-        'Next.js build directory (.next) not found. Please run "next build" first.'
-      );
+    if (!(await fs.pathExists(buildPath))) {
+      throw new Error('Next.js build directory (.next) not found. Please run "next build" first.');
     }
 
     // Detect routers
     const { appRouter, pagesRouter } = await this.detectRouters(projectPath);
 
     // Detect server requirements
-    const needsServer = await this.detectServerRequirements(
-      projectPath,
-      appRouter,
-      pagesRouter
-    );
+    const needsServer = await this.detectServerRequirements(projectPath, appRouter, pagesRouter);
 
     // Detect image optimization
     const needsImage = await this.detectImageOptimization(projectPath);
@@ -127,14 +126,12 @@ export class Analyzer {
   private async detectNextVersion(projectPath: string): Promise<string> {
     const packageJsonPath = path.join(projectPath, 'package.json');
 
-    if (!await fs.pathExists(packageJsonPath)) {
+    if (!(await fs.pathExists(packageJsonPath))) {
       throw new Error('package.json not found in project');
     }
 
     const packageJson = await fs.readJson(packageJsonPath);
-    const nextVersion =
-      packageJson.dependencies?.next ||
-      packageJson.devDependencies?.next;
+    const nextVersion = packageJson.dependencies?.next || packageJson.devDependencies?.next;
 
     if (!nextVersion) {
       throw new Error('Next.js not found in package.json dependencies');
@@ -148,7 +145,7 @@ export class Analyzer {
    * Detect which routers are in use
    */
   private async detectRouters(
-    projectPath: string
+    projectPath: string,
   ): Promise<{ appRouter: boolean; pagesRouter: boolean }> {
     const appDir = path.join(projectPath, 'app');
     const srcAppDir = path.join(projectPath, 'src', 'app');
@@ -167,7 +164,7 @@ export class Analyzer {
   private async detectServerRequirements(
     projectPath: string,
     hasAppRouter: boolean,
-    hasPagesRouter: boolean
+    hasPagesRouter: boolean,
   ): Promise<boolean> {
     // Check for API routes
     const apiRoutes = await glob('**/api/**/*.{js,ts,jsx,tsx}', {
@@ -186,10 +183,7 @@ export class Analyzer {
 
       for (const page of pages) {
         const content = await fs.readFile(path.join(projectPath, page), 'utf-8');
-        if (
-          content.includes('getServerSideProps') ||
-          content.includes('getInitialProps')
-        ) {
+        if (content.includes('getServerSideProps') || content.includes('getInitialProps')) {
           return true;
         }
       }
@@ -210,7 +204,7 @@ export class Analyzer {
     if (await fs.pathExists(manifestPath)) {
       const manifest = await fs.readJson(manifestPath);
       // If there are pages other than static HTML, we need server
-      return Object.keys(manifest).some(key => !key.endsWith('.html'));
+      return Object.keys(manifest).some((key) => !key.endsWith('.html'));
     }
 
     return false;
@@ -245,10 +239,7 @@ export class Analyzer {
 
     for (const file of files) {
       const content = await fs.readFile(path.join(projectPath, file), 'utf-8');
-      if (
-        content.includes('next/image') ||
-        content.includes('next/future/image')
-      ) {
+      if (content.includes('next/image') || content.includes('next/future/image')) {
         return true;
       }
     }
@@ -262,7 +253,7 @@ export class Analyzer {
    */
   private async detectISR(
     projectPath: string,
-    buildPath: string
+    buildPath: string,
   ): Promise<{
     enabled: boolean;
     onDemand: boolean;
@@ -322,7 +313,7 @@ export class Analyzer {
    */
   private async detectMiddleware(
     projectPath: string,
-    buildPath: string
+    buildPath: string,
   ): Promise<{
     enabled: boolean;
     mode: 'edge-emulated' | 'node-fallback';
@@ -344,11 +335,7 @@ export class Analyzer {
     }
 
     // Check middleware manifest
-    const middlewareManifestPath = path.join(
-      buildPath,
-      'server',
-      'middleware-manifest.json'
-    );
+    const middlewareManifestPath = path.join(buildPath, 'server', 'middleware-manifest.json');
 
     if (await fs.pathExists(middlewareManifestPath)) {
       const manifest = await fs.readJson(middlewareManifestPath);
@@ -367,10 +354,7 @@ export class Analyzer {
   /**
    * Detect if server actions are used
    */
-  private async detectServerActions(
-    projectPath: string,
-    hasAppRouter: boolean
-  ): Promise<boolean> {
+  private async detectServerActions(projectPath: string, hasAppRouter: boolean): Promise<boolean> {
     if (!hasAppRouter) return false;
 
     const files = await glob('**/app/**/*.{js,jsx,ts,tsx}', {

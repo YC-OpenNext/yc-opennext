@@ -17,22 +17,26 @@ Please be respectful and constructive in all interactions. We're building someth
 ### Setup
 
 1. Fork and clone the repository:
+
 ```bash
 git clone https://github.com/your-username/yc-opennext.git
 cd yc-opennext
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Build all packages:
+
 ```bash
 pnpm build
 ```
 
 4. Run tests:
+
 ```bash
 pnpm test
 ```
@@ -279,6 +283,7 @@ We use semantic versioning:
 ## Recognition
 
 Contributors will be recognized in:
+
 - README.md contributors section
 - Release notes
 - Project website

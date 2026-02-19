@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Troubleshooting - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/docs.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1976d2" />
+            <text
+              x="16"
+              y="21"
+              font-family="Arial"
+              font-size="14"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              YC
+            </text>
+          </svg>
+          YC-OpenNext
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#quickstart">Quick Start</a></li>
+          <li><a href="/docs.html" class="active">Documentation</a></li>
+          <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+        </ul>
+        <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </nav>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Getting Started</div>
+          <ul class="sidebar-links">
+            <li><a href="/getting-started/installation.html">Installation</a></li>
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Guides</div>
+          <ul class="sidebar-links">
+            <li><a href="/deployment.html">Deployment</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration from Vercel</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">API Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/api/cli-commands.html">CLI Commands</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Architecture</div>
+          <ul class="sidebar-links">
+            <li><a href="/architecture.html">System Architecture</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Examples</div>
+          <ul class="sidebar-links">
+            <li><a href="/examples/blog-with-isr.html">Blog with ISR</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/reference/troubleshooting.html" class="active">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <div class="docs-main">
+          <div class="breadcrumbs">
+            <a href="/docs.html">Docs</a>
+            <span class="separator">/</span>
+            <a href="/reference/troubleshooting.html">Reference</a>
+            <span class="separator">/</span>
+            <span>Troubleshooting</span>
+          </div>
+
+          <div class="page-header">
+            <h1>Troubleshooting</h1>
+            <p class="subtitle">
+              Common issues and solutions when deploying Next.js applications with YC-OpenNext.
+            </p>
+          </div>
+
+          <h2>Build Issues</h2>
+
+          <h3>Error: "Next.js build directory (.next) not found"</h3>
+          <p>
+            <strong>Cause:</strong> The Next.js application hasn't been built before running
+            YC-OpenNext.
+          </p>
+          <p><strong>Solution:</strong></p>
+
+          <pre><code class="language-bash"># Build Next.js first
+npm run build
+
+# Then run YC-OpenNext
+yc-opennext build --project . --output ./yc-build</code></pre>
+
+          <hr />
+
+          <h3>Error: "Next.js not found in package.json dependencies"</h3>
+          <p><strong>Cause:</strong> Next.js is not installed or is in devDependencies.</p>
+          <p><strong>Solution:</strong></p>
+
+          <pre><code class="language-bash"># Move Next.js to dependencies
+npm install next react react-dom
+
+# Verify package.json
+cat package.json | grep '"next"'</code></pre>
+
+          <hr />
+
+          <h3>Error: "Incompatible Next.js version"</h3>
+          <p><strong>Cause:</strong> Using a Next.js version not supported by YC-OpenNext.</p>
+          <p><strong>Solution:</strong></p>
+
+          <pre><code class="language-bash"># Check supported versions
+yc-opennext analyze --project . --verbose
+
+# Update Next.js to a supported version
+npm install next@14</code></pre>
+
+          <hr />
+
+          <h3>Build Output Too Large</h3>
+          <p><strong>Cause:</strong> Bundle size exceeds Cloud Function limits.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Enable standalone mode:</p>
+
+          <pre><code class="language-javascript">// next.config.js
+module.exports = {
+  output: 'standalone',
+};</code></pre>
+
+          <p>2. Optimize dependencies:</p>
+
+          <pre><code class="language-bash"># Analyze bundle
+npm run build -- --analyze
+
+# Remove unused dependencies
+npm prune --production</code></pre>
+
+          <p>3. Use dynamic imports:</p>
+
+          <pre><code class="language-javascript">// Instead of
+import HeavyComponent from './HeavyComponent';
+
+// Use
+const HeavyComponent = dynamic(() =&gt; import('./HeavyComponent'));</code></pre>
+
+          <h2>Deployment Issues</h2>
+
+          <h3>Error: "Access Denied" during upload</h3>
+          <p><strong>Cause:</strong> Invalid or missing AWS credentials for Object Storage.</p>
+          <p><strong>Solution:</strong></p>
+
+          <pre><code class="language-bash"># Check credentials
+echo $AWS_ACCESS_KEY_ID
+echo $AWS_SECRET_ACCESS_KEY
+
+# Create new access keys
+yc iam access-key create --service-account-name my-sa &gt; keys.json
+export AWS_ACCESS_KEY_ID=$(cat keys.json | jq -r .access_key.key_id)
+export AWS_SECRET_ACCESS_KEY=$(cat keys.json | jq -r .secret)</code></pre>
+
+          <hr />
+
+          <h3>Error: "Bucket does not exist"</h3>
+          <p><strong>Cause:</strong> Object Storage bucket hasn't been created.</p>
+          <p><strong>Solution:</strong></p>
+
+          <pre><code class="language-bash"># Create buckets
+yc storage bucket create --name my-app-assets
+yc storage bucket create --name my-app-cache
+
+# Verify buckets exist
+yc storage bucket list</code></pre>
+
+          <hr />
+
+          <h3>Terraform Error: "Provider not authenticated"</h3>
+          <p><strong>Cause:</strong> Yandex Cloud provider not configured.</p>
+          <p><strong>Solution:</strong></p>
+
+          <pre><code class="language-bash"># Option 1: Use service account key
+export YC_SERVICE_ACCOUNT_KEY_FILE=./sa-key.json
+
+# Option 2: Use OAuth token
+yc init
+export YC_TOKEN=$(yc iam create-token)
+
+# Verify in Terraform
+terraform init
+terraform plan</code></pre>
+
+          <hr />
+
+          <h3>API Gateway Returns 404</h3>
+          <p><strong>Cause:</strong> Routes not properly configured or function not deployed.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Check function deployment:</p>
+
+          <pre><code class="language-bash">yc serverless function list
+yc serverless function version list --function-name my-app-server</code></pre>
+
+          <p>2. Verify API Gateway spec:</p>
+
+          <pre><code class="language-bash">yc api-gateway get --name my-app-gateway</code></pre>
+
+          <p>3. Check routing in OpenAPI spec:</p>
+
+          <pre><code class="language-yaml">paths:
+  /{proxy+}:
+    any:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: ${function_id} # Must be valid</code></pre>
+
+          <h2>Runtime Issues</h2>
+
+          <h3>Function Timeout</h3>
+          <p><strong>Symptoms:</strong> Function returns timeout error after 30 seconds.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Increase timeout in Terraform:</p>
+
+          <pre><code class="language-hcl">function_timeout = {
+  server = 60  # Increase to 60 seconds
+  image  = 30
+}</code></pre>
+
+          <p>2. Optimize slow operations:</p>
+
+          <pre><code class="language-javascript">// Use caching for expensive operations
+import { unstable_cache } from 'next/cache';
+
+const getCachedData = unstable_cache(async () =&gt; fetchExpensiveData(), ['cache-key'], {
+  revalidate: 3600,
+});</code></pre>
+
+          <hr />
+
+          <h3>Out of Memory Error</h3>
+          <p><strong>Symptoms:</strong> Function crashes with memory error.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Increase memory allocation:</p>
+
+          <pre><code class="language-hcl">function_memory = {
+  server = 1024  # Increase to 1GB
+  image  = 512
+}</code></pre>
+
+          <p>2. Profile memory usage:</p>
+
+          <pre><code class="language-javascript">// Add memory logging
+console.log('Memory usage:', process.memoryUsage());</code></pre>
+
+          <p>3. Fix memory leaks:</p>
+
+          <pre><code class="language-javascript">// Clear large objects when done
+let largeData = await fetchData();
+// Use data...
+largeData = null; // Clear reference</code></pre>
+
+          <hr />
+
+          <h3>Cold Start Issues</h3>
+          <p><strong>Symptoms:</strong> First request takes several seconds.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Enable prepared instances:</p>
+
+          <pre><code class="language-hcl">prepared_instances = {
+  server = 2  # Keep 2 warm instances
+  image  = 1
+}</code></pre>
+
+          <p>2. Optimize initialization:</p>
+
+          <pre><code class="language-javascript">// Lazy load heavy modules
+let heavyModule;
+function getHeavyModule() {
+  if (!heavyModule) {
+    heavyModule = require('heavy-module');
+  }
+  return heavyModule;
+}</code></pre>
+
+          <p>3. Use lightweight dependencies when possible.</p>
+
+          <h2>ISR &amp; Caching Issues</h2>
+
+          <h3>Pages Not Updating After Revalidation</h3>
+          <p><strong>Cause:</strong> Cache not properly invalidated or YDB connection issues.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Check YDB connection:</p>
+
+          <pre><code class="language-bash"># Verify YDB is accessible
+yc ydb database get --name my-app-db
+
+# Check tables exist
+yc ydb table list --database-name my-app-db</code></pre>
+
+          <p>2. Verify revalidation endpoint:</p>
+
+          <pre><code class="language-bash"># Test revalidation
+curl -X POST https://your-app.com/api/revalidate \
+  -H "x-revalidate-signature: YOUR_SIGNATURE" \
+  -d '{"type": "path", "value": "/blog/post-1"}'</code></pre>
+
+          <p>3. Check cache bucket:</p>
+
+          <pre><code class="language-bash"># List cached files
+yc storage s3 ls s3://my-cache-bucket/cache/</code></pre>
+
+          <hr />
+
+          <h3>Tag Revalidation Not Working</h3>
+          <p>
+            <strong>Cause:</strong> Tags not properly stored in YDB or incorrect implementation.
+          </p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Verify tag storage:</p>
+
+          <pre><code class="language-javascript">// Ensure tags are set during generation
+export async function generateStaticParams() {
+  return {
+    props: {
+      /* ... */
+    },
+    tags: ['blog', 'tech'], // Add tags
+  };
+}</code></pre>
+
+          <p>2. Check YDB tag table:</p>
+
+          <pre><code class="language-bash"># Query tag mappings
+yc ydb table query execute \
+  --database /ru-central1/.../my-app-db \
+  --query "SELECT * FROM isr_tags WHERE pk = 'tag#blog'"</code></pre>
+
+          <h2>Middleware Issues</h2>
+
+          <h3>Middleware Not Executing</h3>
+          <p>
+            <strong>Cause:</strong> Middleware file not in correct location or not properly
+            configured.
+          </p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Check middleware location:</p>
+
+          <pre><code class="language-bash"># Must be at root or src root
+ls -la middleware.{js,ts}
+ls -la src/middleware.{js,ts}</code></pre>
+
+          <p>2. Verify middleware manifest:</p>
+
+          <pre><code class="language-bash"># Check build output
+cat .next/server/middleware-manifest.json</code></pre>
+
+          <p>3. Check middleware matcher:</p>
+
+          <pre><code class="language-javascript">// middleware.js
+export const config = {
+  matcher: [
+    // Must match your routes
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+};</code></pre>
+
+          <hr />
+
+          <h3>Edge Runtime API Not Supported</h3>
+          <p><strong>Symptoms:</strong> "X is not defined" errors in middleware.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Use supported APIs only:</p>
+
+          <pre><code class="language-javascript">// Supported
+(Request, Response, Headers, URL, URLSearchParams, fetch);
+
+// Not supported (use alternatives)
+// Edge-specific APIs like crypto.subtle may have limitations</code></pre>
+
+          <p>2. Enable Node fallback mode:</p>
+
+          <pre><code class="language-javascript">// Force Node.js mode if needed
+export const config = {
+  runtime: 'nodejs', // Instead of 'edge'
+};</code></pre>
+
+          <h2>Image Optimization Issues</h2>
+
+          <h3>Images Not Loading</h3>
+          <p><strong>Cause:</strong> Image domain not configured or optimization function error.</p>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Configure image domains:</p>
+
+          <pre><code class="language-javascript">// next.config.js
+module.exports = {
+  images: {
+    domains: ['example.com', 'images.example.com'],
+    // Or use remotePatterns for more control
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.example.com',
+      },
+    ],
+  },
+};</code></pre>
+
+          <p>2. Check image function logs:</p>
+
+          <pre><code class="language-bash">yc serverless function logs --name my-app-image-function</code></pre>
+
+          <hr />
+
+          <h3>Image Optimization Slow</h3>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Enable image caching:</p>
+
+          <pre><code class="language-javascript">// Use cache headers
+&lt;Image
+  src="/hero.jpg"
+  width={1200}
+  height={600}
+  alt="Hero"
+  priority // For LCP images
+  placeholder="blur" // With blurDataURL
+/&gt;</code></pre>
+
+          <p>2. Optimize source images:</p>
+
+          <pre><code class="language-bash"># Pre-optimize images during build
+npm install --save-dev @squoosh/cli
+squoosh-cli --resize '{width:1920}' --webp '{quality:80}' ./public/images/*</code></pre>
+
+          <h2>DNS &amp; SSL Issues</h2>
+
+          <h3>Custom Domain Not Working</h3>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Verify DNS records:</p>
+
+          <pre><code class="language-bash"># Check DNS propagation
+dig your-domain.com
+nslookup your-domain.com
+
+# Get correct records from Terraform
+terraform output name_servers
+terraform output api_gateway_domain</code></pre>
+
+          <p>2. Wait for propagation (up to 48 hours).</p>
+
+          <hr />
+
+          <h3>SSL Certificate Validation Failed</h3>
+          <p><strong>Solution:</strong></p>
+
+          <p>1. Check certificate status:</p>
+
+          <pre><code class="language-bash">yc certificate-manager certificate get --name my-app-cert</code></pre>
+
+          <p>2. Verify DNS validation records:</p>
+
+          <pre><code class="language-bash"># Get validation records
+yc certificate-manager certificate get --name my-app-cert \
+  --format json | jq .challenges
+
+# Add CNAME records to your DNS</code></pre>
+
+          <h2>Performance Issues</h2>
+
+          <h3>Slow Response Times</h3>
+          <p><strong>Diagnosis:</strong></p>
+
+          <pre><code class="language-bash"># Check function duration
+yc serverless function list-operations --function-name my-app-server
+
+# Monitor metrics
+yc monitoring dashboard get --name my-app-dashboard</code></pre>
+
+          <p><strong>Solutions:</strong></p>
+          <ol>
+            <li>Enable CDN for static assets</li>
+            <li>Optimize database queries</li>
+            <li>Implement proper caching</li>
+            <li>Use prepared instances</li>
+            <li>Minimize bundle size</li>
+          </ol>
+
+          <hr />
+
+          <h3>High Costs</h3>
+          <p><strong>Analysis:</strong></p>
+
+          <pre><code class="language-bash"># Check usage
+yc billing account get --id YOUR_BILLING_ACCOUNT_ID
+
+# Function invocations
+yc serverless function get --name my-app-server</code></pre>
+
+          <p><strong>Optimization:</strong></p>
+          <ol>
+            <li>Reduce function memory if overprovisioned</li>
+            <li>Implement aggressive caching</li>
+            <li>Use lifecycle policies for storage</li>
+            <li>Optimize image sizes</li>
+            <li>Consider reserved capacity</li>
+          </ol>
+
+          <h2>Debug Mode</h2>
+          <p>Enable detailed logging for troubleshooting:</p>
+
+          <pre><code class="language-bash"># Set debug environment variables
+export DEBUG=yc-opennext:*
+export LOG_LEVEL=debug
+
+# In function environment
+environment = {
+  DEBUG = "yc-opennext:*"
+  LOG_LEVEL = "debug"
+}</code></pre>
+
+          <h2>Getting Help</h2>
+          <p>If you can't resolve an issue:</p>
+
+          <p><strong>1. Search existing issues:</strong></p>
+
+          <pre><code class="language-bash">https://github.com/yc-opennext/yc-opennext/issues</code></pre>
+
+          <p><strong>2. Create a detailed bug report:</strong></p>
+          <ul>
+            <li>YC-OpenNext version</li>
+            <li>Next.js version</li>
+            <li>Error messages</li>
+            <li>Relevant configuration</li>
+            <li>Steps to reproduce</li>
+          </ul>
+
+          <p><strong>3. Join the community:</strong></p>
+          <ul>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions"
+                >GitHub Discussions</a
+              >
+            </li>
+            <li>
+              <a href="https://stackoverflow.com/questions/tagged/yc-opennext">Stack Overflow</a>
+            </li>
+          </ul>
+
+          <h2>Common Error Codes</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Solution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ENOENT</code></td>
+                <td>File not found</td>
+                <td>Check file paths and build output</td>
+              </tr>
+              <tr>
+                <td><code>EACCES</code></td>
+                <td>Permission denied</td>
+                <td>Check IAM roles and permissions</td>
+              </tr>
+              <tr>
+                <td><code>ETIMEDOUT</code></td>
+                <td>Operation timeout</td>
+                <td>Increase timeouts or optimize code</td>
+              </tr>
+              <tr>
+                <td><code>ENOMEM</code></td>
+                <td>Out of memory</td>
+                <td>Increase function memory</td>
+              </tr>
+              <tr>
+                <td><code>ENOTFOUND</code></td>
+                <td>DNS lookup failed</td>
+                <td>Check network and endpoints</td>
+              </tr>
+              <tr>
+                <td><code>413</code></td>
+                <td>Payload too large</td>
+                <td>Reduce request size or use streaming</td>
+              </tr>
+              <tr>
+                <td><code>429</code></td>
+                <td>Too many requests</td>
+                <td>Implement rate limiting or scaling</td>
+              </tr>
+              <tr>
+                <td><code>500</code></td>
+                <td>Internal server error</td>
+                <td>Check function logs for details</td>
+              </tr>
+              <tr>
+                <td><code>502</code></td>
+                <td>Bad gateway</td>
+                <td>Check function health and configuration</td>
+              </tr>
+              <tr>
+                <td><code>503</code></td>
+                <td>Service unavailable</td>
+                <td>Check quotas and limits</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Previous/Next Navigation -->
+          <div class="page-nav">
+            <a href="/examples/blog-with-isr.html" class="prev">
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">Blog with ISR</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/docs.html">Documentation</a></li>
+            <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            <li><a href="/architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+            <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul class="footer-links">
+            <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+      </div>
+    </footer>
+
+    <button
+      class="sidebar-toggle"
+      onclick="document.querySelector('.sidebar').classList.toggle('open')"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script>
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      });
+    </script>
+  </body>
+</html>

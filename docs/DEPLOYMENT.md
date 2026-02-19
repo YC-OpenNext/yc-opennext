@@ -3,12 +3,14 @@
 ## Prerequisites
 
 ### Required Tools
+
 - Node.js 18+ and pnpm 8+
 - Terraform 1.5+
 - Yandex Cloud CLI (`yc`)
 - Git
 
 ### Yandex Cloud Setup
+
 1. Create a YC account
 2. Create a cloud and folder
 3. Enable required services:
@@ -23,6 +25,7 @@
 ### Authentication
 
 #### Option 1: Service Account Key
+
 ```bash
 yc iam service-account create --name deploy-sa
 yc iam key create --service-account-name deploy-sa --output key.json
@@ -30,6 +33,7 @@ export YC_SERVICE_ACCOUNT_KEY_FILE=./key.json
 ```
 
 #### Option 2: User OAuth Token
+
 ```bash
 yc init
 export YC_TOKEN=$(yc iam create-token)
@@ -76,6 +80,7 @@ yc-opennext build \
 ```
 
 Output structure:
+
 ```
 build/
 ├── artifacts/
@@ -302,24 +307,28 @@ yc monitoring metrics get \
 ### Common Issues
 
 #### 1. Function Timeout
+
 ```bash
 # Increase timeout
 terraform apply -var="function_timeout.server=120"
 ```
 
 #### 2. Cold Starts
+
 ```bash
 # Add prepared instances
 terraform apply -var="prepared_instances.server=2"
 ```
 
 #### 3. Memory Issues
+
 ```bash
 # Increase memory
 terraform apply -var="function_memory.server=2048"
 ```
 
 #### 4. Cache Misses
+
 ```bash
 # Check cache configuration
 yc storage bucket get --name my-app-cache

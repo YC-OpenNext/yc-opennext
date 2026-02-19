@@ -35,7 +35,7 @@ output "server_function_id" {
 
 output "server_function_version" {
   description = "Server function version ID"
-  value       = local.manifest.capabilities.needsServer ? yandex_function_version.server[0].id : null
+  value       = local.manifest.capabilities.needsServer ? yandex_function.server[0].version : null
 }
 
 output "image_function_id" {
@@ -45,13 +45,18 @@ output "image_function_id" {
 
 output "image_function_version" {
   description = "Image function version ID"
-  value       = local.manifest.capabilities.needsImage ? yandex_function_version.image[0].id : null
+  value       = local.manifest.capabilities.needsImage ? yandex_function.image[0].version : null
 }
 
 output "ydb_endpoint" {
-  description = "YDB DocAPI endpoint"
-  value       = var.enable_isr ? module.ydb_docapi[0].endpoint : null
+  description = "YDB endpoint"
+  value       = var.enable_isr ? yandex_ydb_database_serverless.isr[0].ydb_full_endpoint : null
   sensitive   = true
+}
+
+output "ydb_database" {
+  description = "YDB database path"
+  value       = var.enable_isr ? yandex_ydb_database_serverless.isr[0].database_path : null
 }
 
 output "lockbox_secret_ids" {
@@ -82,7 +87,7 @@ output "deployment_info" {
   }
 }
 
-output "name_servers" {
-  description = "Name servers for DNS zone"
-  value       = var.create_dns_zone ? yandex_dns_zone.main[0].name_servers : []
+output "dns_zone_id" {
+  description = "DNS zone ID"
+  value       = var.create_dns_zone ? yandex_dns_zone.main[0].id : null
 }

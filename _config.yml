@@ -1,0 +1,11 @@
+# GitHub Pages configuration
+theme: null
+source: docs/public
+destination: _site
+include:
+  - '*.html'
+  - '*.md'
+  - '*.svg'
+  - '*.ico'
+  - 'CNAME'
+  - '.nojekyll'

@@ -155,7 +155,7 @@ The deployment manifest contains:
 The CLI uses a compatibility matrix to validate Next.js features:
 
 | Next.js Version | Pages Router | App Router | Middleware | ISR | Server Actions |
-|-----------------|--------------|------------|------------|-----|----------------|
+| --------------- | ------------ | ---------- | ---------- | --- | -------------- |
 | 12.x            | ✅           | ❌         | 🟡         | ✅  | ❌             |
 | 13.x            | ✅           | 🟡         | ✅         | ✅  | 🟡             |
 | 14.x            | ✅           | ✅         | ✅         | ✅  | ✅             |
@@ -166,12 +166,14 @@ Legend: ✅ Supported | 🟡 Partial | ❌ Not Supported
 ## Environment Variables
 
 For S3 operations:
+
 ```bash
 export AWS_ACCESS_KEY_ID=your_key
 export AWS_SECRET_ACCESS_KEY=your_secret
 ```
 
 For YC CLI operations:
+
 ```bash
 export YC_TOKEN=$(yc iam create-token)
 # or
@@ -191,7 +193,7 @@ module.exports = {
     domains: ['example.com'],
     formats: ['image/avif', 'image/webp'],
   },
-}
+};
 ```
 
 ### Build Optimization
@@ -208,6 +210,7 @@ For optimal bundle size:
 ### Build Failures
 
 Check Next.js build first:
+
 ```bash
 cd my-app
 npm run build
@@ -216,16 +219,18 @@ npm run build
 ### Large Bundle Size
 
 Enable standalone mode:
+
 ```javascript
 // next.config.js
 module.exports = {
-  output: 'standalone'
-}
+  output: 'standalone',
+};
 ```
 
 ### Compatibility Issues
 
 Run analysis to check support:
+
 ```bash
 yc-opennext analyze --project . --verbose
 ```

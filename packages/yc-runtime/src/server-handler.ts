@@ -1,10 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { parse as parseUrl } from 'url';
 import { parse as parseQuery } from 'querystring';
-import cookie from 'cookie';
-import { Readable } from 'stream';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 // API Gateway event types
 export interface APIGatewayProxyEventV2 {
@@ -83,10 +80,7 @@ export function createServerHandler(options: HandlerOptions) {
     return nextServer;
   };
 
-  return async (
-    event: APIGatewayProxyEventV2,
-    context: any
-  ): Promise<APIGatewayProxyResultV2> => {
+  return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     console.log('[Server] Handling request:', {
       method: event.requestContext.http.method,
       path: event.rawPath,
@@ -140,10 +134,7 @@ export function createServerHandler(options: HandlerOptions) {
 /**
  * Create Node.js compatible request and response objects
  */
-function createNodeRequestResponse(
-  event: APIGatewayProxyEventV2,
-  trustProxy: boolean
-) {
+function createNodeRequestResponse(event: APIGatewayProxyEventV2, trustProxy: boolean) {
   const req = new IncomingMessage(null as any) as IncomingMessage & {
     body?: any;
     rawBody?: string;
@@ -167,12 +158,16 @@ function createNodeRequestResponse(
   }
 
   // Set IP address
-  if (trustProxy && req.headers['x-forwarded-for']) {
-    const ips = (req.headers['x-forwarded-for'] as string).split(',');
-    req.socket.remoteAddress = ips[0].trim();
-  } else {
-    req.socket.remoteAddress = event.requestContext.http.sourceIp;
-  }
+  const ipAddress =
+    trustProxy && req.headers['x-forwarded-for']
+      ? (req.headers['x-forwarded-for'] as string).split(',')[0].trim()
+      : event.requestContext.http.sourceIp;
+
+  // Create a mock socket with the IP address
+  Object.defineProperty(req, 'socket', {
+    value: { remoteAddress: ipAddress },
+    writable: true,
+  });
 
   // Parse cookies
   if (event.cookies && event.cookies.length > 0) {
@@ -188,19 +183,14 @@ function createNodeRequestResponse(
     req.rawBody = body.toString();
     req.body = tryParseJson(req.rawBody);
 
-    // Create readable stream from body
-    const readable = new Readable();
-    readable.push(body);
-    readable.push(null);
-
-    // Pipe to request
-    readable.pipe(req);
+    // Emit data and end events
+    req.emit('data', body);
+    req.emit('end');
   } else {
     req.emit('end');
   }
 
   // Create response object
-  let responseBody = '';
   const responseChunks: Buffer[] = [];
   const responseHeaders: Record<string, string | string[]> = {};
   let statusCode = 200;
@@ -282,7 +272,7 @@ async function handleMiddleware(
   event: APIGatewayProxyEventV2,
   req: IncomingMessage,
   res: ServerResponse,
-  dir: string
+  dir: string,
 ): Promise<APIGatewayProxyResultV2 | null> {
   try {
     // Check if middleware exists
@@ -330,12 +320,7 @@ async function handleMiddleware(
 function shouldBase64Encode(contentType?: string): boolean {
   if (!contentType) return false;
 
-  const textTypes = [
-    'text/',
-    'application/json',
-    'application/xml',
-    'application/javascript',
-  ];
+  const textTypes = ['text/', 'application/json', 'application/xml', 'application/javascript'];
 
   return !textTypes.some((type) => contentType.includes(type));
 }

@@ -7,7 +7,12 @@
     "serve": "npx http-server ./public -p 3001 -o",
     "serve:python": "cd public && python3 -m http.server 3001"
   },
-  "keywords": ["nextjs", "yandex-cloud", "documentation", "deployment"],
+  "keywords": [
+    "nextjs",
+    "yandex-cloud",
+    "documentation",
+    "deployment"
+  ],
   "author": "YC-OpenNext Team",
   "license": "MIT"
 }

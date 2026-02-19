@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+coverage
+.next
+out
+*.js
+*.d.ts
+fixtures
+terraform
+docs
+examples
+*.config.js
+*.config.ts

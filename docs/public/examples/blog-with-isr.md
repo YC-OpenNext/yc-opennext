@@ -5,6 +5,7 @@ Build a performant blog with Incremental Static Regeneration on Yandex Cloud.
 ## Overview
 
 This example demonstrates:
+
 - ✅ Static generation with ISR
 - ✅ On-demand revalidation
 - ✅ Tag-based cache invalidation
@@ -102,13 +103,11 @@ export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
       const slug = fileName.replace(/\.mdx?$/, '');
       const post = await getPostBySlug(slug);
       return post;
-    })
+    }),
   );
 
   // Sort by date
-  return posts.sort((a, b) =>
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 });
 
 export const getPostBySlug = cache(async (slug: string): Promise<BlogPost> => {
@@ -138,7 +137,7 @@ export const getPostBySlug = cache(async (slug: string): Promise<BlogPost> => {
 
 export async function getPostsByTag(tag: string): Promise<BlogPost[]> {
   const posts = await getAllPosts();
-  return posts.filter(post => post.tags.includes(tag));
+  return posts.filter((post) => post.tags.includes(tag));
 }
 ```
 
@@ -304,10 +303,7 @@ function verifySignature(body: string, signature: string, secret: string) {
   const hmac = crypto.createHmac('sha256', secret);
   hmac.update(body);
   const expectedSignature = hmac.digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
 
 export async function POST(request: NextRequest) {
@@ -317,10 +313,7 @@ export async function POST(request: NextRequest) {
     const secret = process.env.REVALIDATE_SECRET!;
 
     if (!signature) {
-      return NextResponse.json(
-        { error: 'Missing signature' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
     }
 
     // Get and verify body
@@ -328,10 +321,7 @@ export async function POST(request: NextRequest) {
     const data = JSON.parse(body);
 
     if (!verifySignature(body, signature, secret)) {
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     // Revalidate based on type
@@ -343,7 +333,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         revalidated: true,
         type: 'path',
-        value
+        value,
       });
     } else if (type === 'tag') {
       // Revalidate by tag
@@ -351,27 +341,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         revalidated: true,
         type: 'tag',
-        value
+        value,
       });
     } else if (type === 'all') {
       // Revalidate everything
       revalidatePath('/blog');
       return NextResponse.json({
         revalidated: true,
-        type: 'all'
+        type: 'all',
       });
     }
 
-    return NextResponse.json(
-      { error: 'Invalid revalidation type' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid revalidation type' }, { status: 400 });
   } catch (error) {
     console.error('Revalidation error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -526,20 +510,13 @@ async function onContentUpdate(event) {
 
 ```typescript
 // app/blog/page.tsx with pagination
-export default async function BlogPage({
-  searchParams
-}: {
-  searchParams: { page?: string }
-}) {
+export default async function BlogPage({ searchParams }: { searchParams: { page?: string } }) {
   const page = parseInt(searchParams.page || '1');
   const postsPerPage = 9;
   const posts = await getAllPosts();
 
   const totalPages = Math.ceil(posts.length / postsPerPage);
-  const paginatedPosts = posts.slice(
-    (page - 1) * postsPerPage,
-    page * postsPerPage
-  );
+  const paginatedPosts = posts.slice((page - 1) * postsPerPage, page * postsPerPage);
 
   // Render paginated posts...
 }
@@ -552,10 +529,11 @@ export default async function BlogPage({
 export async function searchPosts(query: string) {
   const posts = await getAllPosts();
 
-  return posts.filter(post =>
-    post.title.toLowerCase().includes(query.toLowerCase()) ||
-    post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+  return posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(query.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase())),
   );
 }
 ```
@@ -568,12 +546,15 @@ export async function searchPosts(query: string) {
 // lib/cache.ts
 export async function getCacheStats() {
   // Query YDB for cache hit/miss rates
-  const stats = await queryYDB(`
+  const stats = await queryYDB(
+    `
     SELECT COUNT(*) as total,
            SUM(CASE WHEN hit = true THEN 1 ELSE 0 END) as hits
     FROM cache_logs
     WHERE timestamp > ?
-  `, [Date.now() - 86400000]); // Last 24 hours
+  `,
+    [Date.now() - 86400000],
+  ); // Last 24 hours
 
   return {
     hitRate: (stats.hits / stats.total) * 100,
@@ -585,6 +566,7 @@ export async function getCacheStats() {
 ## Conclusion
 
 This blog implementation demonstrates:
+
 - ✅ ISR for optimal performance
 - ✅ On-demand revalidation for fresh content
 - ✅ Tag-based invalidation for related content
@@ -593,6 +575,7 @@ This blog implementation demonstrates:
 - ✅ MDX for rich content
 
 The blog will perform excellently on Yandex Cloud with:
+
 - Fast initial loads from cache
 - Automatic background regeneration
 - Efficient cache invalidation

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Architecture - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="15" fill="#1976d2"/>
+                    <text x="16" y="21" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">YC</text>
+                </svg>
+                YC-OpenNext
+            </a>
+            <ul class="nav-links">
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/#quickstart">Quick Start</a></li>
+                <li><a href="/docs.html" class="active">Documentation</a></li>
+                <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            </ul>
+            <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="docs-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <ul class="sidebar-links">
+                    <li><a href="/getting-started/installation.html">Installation</a></li>
+                    <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Guides</div>
+                <ul class="sidebar-links">
+                    <li><a href="/deployment.html">Deployment</a></li>
+                    <li><a href="/guides/migration-from-vercel.html">Migration from Vercel</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">API Reference</div>
+                <ul class="sidebar-links">
+                    <li><a href="/api/cli-commands.html">CLI Commands</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Architecture</div>
+                <ul class="sidebar-links">
+                    <li><a href="/architecture.html" class="active">System Architecture</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Examples</div>
+                <ul class="sidebar-links">
+                    <li><a href="/examples/blog-with-isr.html">Blog with ISR</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Reference</div>
+                <ul class="sidebar-links">
+                    <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-main">
+                <div class="breadcrumbs">
+                    <a href="/docs.html">Docs</a>
+                    <span class="separator">/</span>
+                    <a href="/architecture.html">Architecture</a>
+                    <span class="separator">/</span>
+                    <span>System Architecture</span>
+                </div>
+
+                <div class="page-header">
+                    <h1>System Architecture</h1>
+                    <p class="subtitle">How YC-OpenNext implements Vercel-like deployment on Yandex Cloud.</p>
+                </div>
+
+                <h2>Overview</h2>
+                <p>YC-OpenNext implements a Vercel-like deployment system for Next.js applications on Yandex Cloud, without using serverless containers.</p>
+
+                <h2>System Architecture</h2>
+
+<div class="diagram">&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;                            User Requests                            &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+                               &#x2502;
+                               &#x25BC;
+&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;                         API Gateway                                 &#x2502;
+&#x2502;                    (Custom Domain + TLS)                           &#x2502;
+&#x2502;                                                                     &#x2502;
+&#x2502;  Routes:                                                           &#x2502;
+&#x2502;  &#x2022; /_next/static/* &#x2192; Object Storage                               &#x2502;
+&#x2502;  &#x2022; /public/*       &#x2192; Object Storage                               &#x2502;
+&#x2502;  &#x2022; /_next/image    &#x2192; Image Function                               &#x2502;
+&#x2502;  &#x2022; /api/*          &#x2192; Server Function                              &#x2502;
+&#x2502;  &#x2022; /*              &#x2192; Server Function                              &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+       &#x2502;                    &#x2502;                  &#x2502;
+       &#x25BC;                    &#x25BC;                  &#x25BC;
+&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;    &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;   &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;   Static     &#x2502;    &#x2502;    Server    &#x2502;   &#x2502;    Image     &#x2502;
+&#x2502;   Assets     &#x2502;    &#x2502;   Function   &#x2502;   &#x2502;  Optimizer   &#x2502;
+&#x2502;              &#x2502;    &#x2502;              &#x2502;   &#x2502;              &#x2502;
+&#x2502;  Object      &#x2502;    &#x2502;  &#x2022; SSR       &#x2502;   &#x2502;  &#x2022; Resize    &#x2502;
+&#x2502;  Storage     &#x2502;    &#x2502;  &#x2022; API       &#x2502;   &#x2502;  &#x2022; Format    &#x2502;
+&#x2502;              &#x2502;    &#x2502;  &#x2022; Middleware&#x2502;   &#x2502;  &#x2022; Cache     &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;    &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;   &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+                           &#x2502;                   &#x2502;
+                           &#x25BC;                   &#x25BC;
+                    &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+                    &#x2502;    Data Layer            &#x2502;
+                    &#x2502;                          &#x2502;
+                    &#x2502;  &#x2022; YDB DocAPI (Metadata)&#x2502;
+                    &#x2502;  &#x2022; Object Storage (Cache)&#x2502;
+                    &#x2502;  &#x2022; Lockbox (Secrets)    &#x2502;
+                    &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</div>
+
+                <h2>Component Details</h2>
+
+                <h3>1. Build &amp; Deploy Pipeline</h3>
+                <p>The deployment process consists of three stages:</p>
+
+                <h4>Build Stage (yc-opennext CLI)</h4>
+                <ol>
+                    <li><strong>Analysis</strong>: Detect Next.js version and capabilities</li>
+                    <li><strong>Validation</strong>: Check compatibility matrix</li>
+                    <li><strong>Packaging</strong>: Create function bundles and static assets</li>
+                    <li><strong>Manifest</strong>: Generate deployment descriptor</li>
+                </ol>
+
+                <h4>Upload Stage</h4>
+                <ol>
+                    <li>Upload static assets to Object Storage</li>
+                    <li>Upload function packages</li>
+                    <li>Initialize cache structures</li>
+                </ol>
+
+                <h4>Deploy Stage (Terraform)</h4>
+                <ol>
+                    <li>Provision infrastructure</li>
+                    <li>Deploy function versions</li>
+                    <li>Update API Gateway routes</li>
+                    <li>Switch traffic atomically</li>
+                </ol>
+
+                <h3>2. Request Flow</h3>
+
+                <h4>Static Assets</h4>
+
+<div class="diagram">Client &#x2192; API Gateway &#x2192; Object Storage</div>
+
+                <ul>
+                    <li>Direct serving from Object Storage</li>
+                    <li>Immutable assets with long cache headers</li>
+                    <li>Versioned by build ID</li>
+                </ul>
+
+                <h4>Dynamic Requests (SSR/API)</h4>
+
+<div class="diagram">Client &#x2192; API Gateway &#x2192; Server Function &#x2192; Next.js Handler
+                            &#x2193;
+                        Middleware
+                            &#x2193;
+                        Data Cache</div>
+
+                <h4>Image Optimization</h4>
+
+<div class="diagram">Client &#x2192; API Gateway &#x2192; Image Function &#x2192; Source Image
+                            &#x2193;
+                        Transform
+                            &#x2193;
+                        Cache Result</div>
+
+                <h3>3. ISR &amp; Data Cache</h3>
+
+                <h4>Cache Architecture</h4>
+
+<div class="diagram">&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;   Cache Request     &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+           &#x2502;
+    &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x25BC;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+    &#x2502;  Check YDB  &#x2502;
+    &#x2502;  Metadata   &#x2502;
+    &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+           &#x2502;
+    Is Valid?
+    &#x251C;&#x2500;Yes&#x2500;&#x2500;&#x2192; Fetch from S3
+    &#x2502;
+    &#x2514;&#x2500;No&#x2500;&#x2500;&#x2500;&#x2192; Regenerate
+              &#x251C;&#x2500;&#x2192; Update S3
+              &#x2514;&#x2500;&#x2192; Update YDB</div>
+
+                <h4>YDB DocAPI Tables</h4>
+
+                <p><strong>isr_entries</strong></p>
+                <ul>
+                    <li>Primary: buildId + path</li>
+                    <li>Attributes: headers, status, tags, revalidateAfter, ttl</li>
+                </ul>
+
+                <p><strong>isr_tags</strong></p>
+                <ul>
+                    <li>Primary: tag</li>
+                    <li>Range: cacheKey</li>
+                    <li>Used for tag-based invalidation</li>
+                </ul>
+
+                <p><strong>isr_paths</strong></p>
+                <ul>
+                    <li>Primary: path</li>
+                    <li>Range: buildId</li>
+                    <li>Used for path-based invalidation</li>
+                </ul>
+
+                <p><strong>isr_locks</strong></p>
+                <ul>
+                    <li>Primary: lockKey</li>
+                    <li>TTL-based expiry for concurrency control</li>
+                </ul>
+
+                <h3>4. Middleware Execution</h3>
+
+                <h4>Edge-Emulated Mode (Default)</h4>
+
+                <pre><code class="language-javascript">// Polyfilled Web APIs
+Request, Response, Headers, URL
+fetch (via undici)
+crypto.subtle (limited)
+TextEncoder/Decoder</code></pre>
+
+                <h4>Node-Fallback Mode</h4>
+                <ul>
+                    <li>Direct Node.js execution</li>
+                    <li>No Web API polyfills</li>
+                    <li>Better compatibility, different semantics</li>
+                </ul>
+
+                <h3>5. Blue-Green Deployment</h3>
+                <p>Every deployment creates immutable, versioned resources:</p>
+
+<div class="diagram">v1 (Current):
+  - Assets: s3://bucket/assets/build-v1/*
+  - Functions: server-v1, image-v1
+  - Routes: API Gateway &#x2192; v1
+
+v2 (New):
+  - Assets: s3://bucket/assets/build-v2/*
+  - Functions: server-v2, image-v2
+  - Routes: Update API Gateway &#x2192; v2
+
+Rollback:
+  - Routes: Update API Gateway &#x2192; v1</div>
+
+                <h2>Security Architecture</h2>
+
+                <h3>Secrets Management</h3>
+                <ul>
+                    <li>All secrets stored in Yandex Lockbox</li>
+                    <li>Function access via IAM roles</li>
+                    <li>No plaintext in Terraform state</li>
+                </ul>
+
+                <h3>Encryption</h3>
+                <ul>
+                    <li>KMS keys for all storage</li>
+                    <li>TLS enforced at all endpoints</li>
+                    <li>Encrypted function environment variables</li>
+                </ul>
+
+                <h3>Access Control</h3>
+                <ul>
+                    <li>Private by default</li>
+                    <li>Service accounts with least privilege</li>
+                    <li>API Gateway as single public entry point</li>
+                </ul>
+
+                <h2>Performance Optimizations</h2>
+
+                <h3>Cold Start Mitigation</h3>
+                <ul>
+                    <li>Prepared function instances</li>
+                    <li>Bundled dependencies (standalone mode)</li>
+                    <li>Optimized runtime initialization</li>
+                </ul>
+
+                <h3>Caching Strategy</h3>
+                <ul>
+                    <li>Static assets: Immutable, long TTL</li>
+                    <li>ISR pages: Stale-while-revalidate</li>
+                    <li>Image optimization: Cache transformed images</li>
+                    <li>API responses: Optional cache headers</li>
+                </ul>
+
+                <h3>Scaling</h3>
+                <ul>
+                    <li>Functions: Auto-scale based on load</li>
+                    <li>Storage: Unlimited capacity</li>
+                    <li>YDB: Serverless, auto-scaling</li>
+                    <li>API Gateway: Managed scaling</li>
+                </ul>
+
+                <h2>Monitoring &amp; Observability</h2>
+
+                <h3>Logs</h3>
+                <ul>
+                    <li>Function execution logs</li>
+                    <li>API Gateway access logs</li>
+                    <li>Error tracking with structured logging</li>
+                </ul>
+
+                <h3>Metrics</h3>
+                <ul>
+                    <li>Function invocations, duration, errors</li>
+                    <li>Storage bandwidth, requests</li>
+                    <li>Cache hit rates</li>
+                    <li>YDB operations</li>
+                </ul>
+
+                <h3>Tracing</h3>
+                <ul>
+                    <li>Request ID propagation</li>
+                    <li>Function execution traces</li>
+                    <li>Cache lookup traces</li>
+                </ul>
+
+                <h2>Limitations &amp; Considerations</h2>
+
+                <h3>YC Platform Limits</h3>
+                <ul>
+                    <li>API Gateway: 10MB payload</li>
+                    <li>Functions: 10min timeout, 8GB memory</li>
+                    <li>Cold starts: 100-500ms typical</li>
+                </ul>
+
+                <h3>Next.js Feature Support</h3>
+                <ul>
+                    <li>Streaming: Limited by API Gateway</li>
+                    <li>Middleware: Edge-emulated, not true isolates</li>
+                    <li>WebSockets: Not supported</li>
+                </ul>
+
+                <h3>Cost Optimization</h3>
+                <ul>
+                    <li>Use prepared instances wisely</li>
+                    <li>Enable CDN for high-traffic apps</li>
+                    <li>Configure appropriate cache TTLs</li>
+                    <li>Monitor function memory usage</li>
+                </ul>
+
+                <h2>Disaster Recovery</h2>
+
+                <h3>Backup Strategy</h3>
+                <ul>
+                    <li>Static assets versioned in Object Storage</li>
+                    <li>YDB automatic backups</li>
+                    <li>Function code versioned</li>
+                    <li>Infrastructure as Code</li>
+                </ul>
+
+                <h3>Recovery Procedures</h3>
+                <ol>
+                    <li><strong>Rollback</strong>: Switch to previous build</li>
+                    <li><strong>Restore</strong>: From Object Storage versions</li>
+                    <li><strong>Rebuild</strong>: From source + manifest</li>
+                </ol>
+
+                <h2>Future Enhancements</h2>
+
+                <h3>Planned Features</h3>
+                <ul>
+                    <li>WebSocket support via separate service</li>
+                    <li>Enhanced streaming capabilities</li>
+                    <li>Multi-region deployment</li>
+                    <li>A/B testing support</li>
+                </ul>
+
+                <h3>Performance Improvements</h3>
+                <ul>
+                    <li>Function bundling optimization</li>
+                    <li>Smarter cache warming</li>
+                    <li>Predictive scaling</li>
+                    <li>Edge caching integration</li>
+                </ul>
+
+                <!-- Previous/Next Navigation -->
+                <div class="page-nav">
+                    <a href="/api/cli-commands.html" class="prev">
+                        <span class="nav-label">Previous</span>
+                        <span class="nav-title">CLI Commands</span>
+                    </a>
+                    <a href="/examples/blog-with-isr.html" class="next">
+                        <span class="nav-label">Next</span>
+                        <span class="nav-title">Blog with ISR</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Product</h3>
+                <ul class="footer-links">
+                    <li><a href="/#features">Features</a></li>
+                    <li><a href="/docs.html">Documentation</a></li>
+                    <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+                    <li><a href="/architecture.html">Architecture</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+                    <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+                    <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+                    <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Community</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+                    <li><a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank">Discussions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+        </div>
+    </footer>
+
+    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script>
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+    </script>
+</body>
+</html>

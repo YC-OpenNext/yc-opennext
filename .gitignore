@@ -5,7 +5,7 @@ jspm_packages/
 
 # Build outputs
 dist/
-build/
+/build/
 .next/
 out/
 artifacts/

@@ -117,7 +117,7 @@ variable "dns_zone_id" {
 
 variable "prepared_instances" {
   description = "Number of prepared function instances"
-  type        = object({
+  type = object({
     server = number
     image  = number
   })
@@ -129,7 +129,7 @@ variable "prepared_instances" {
 
 variable "function_timeout" {
   description = "Function execution timeout in seconds"
-  type        = object({
+  type = object({
     server = number
     image  = number
   })
@@ -141,7 +141,7 @@ variable "function_timeout" {
 
 variable "function_memory" {
   description = "Function memory in MB"
-  type        = object({
+  type = object({
     server = number
     image  = number
   })

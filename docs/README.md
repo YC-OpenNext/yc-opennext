@@ -20,6 +20,7 @@ pnpm serve         # Starts server on http://localhost:3001
 ```
 
 This provides:
+
 - ✅ Markdown to HTML conversion
 - ✅ Syntax highlighting
 - ✅ Navigation sidebar
@@ -108,7 +109,7 @@ Once running, the documentation is available at:
 ### Markdown Features Supported
 
 - Headers (`# H1`, `## H2`, etc.)
-- **Bold** and *italic* text
+- **Bold** and _italic_ text
 - `Inline code` and code blocks
 - Tables
 - Lists (ordered and unordered)
@@ -125,7 +126,9 @@ console.log(example);
 \`\`\`
 
 \`\`\`bash
+
 # Shell commands
+
 pnpm install
 pnpm build
 \`\`\`

@@ -15,7 +15,7 @@ export const CapabilitiesSchema = z.object({
   }),
   middleware: z.object({
     enabled: z.boolean(),
-    mode: z.enum(['edge-emulated', 'node-fallback']),
+    mode: z.enum(['edge-emulated', 'node-fallback', 'none']),
   }),
   notes: z.array(z.string()),
 });
@@ -57,10 +57,12 @@ export const ISRConfigSchema = z.object({
     endpointPath: z.string(),
     auth: z.enum(['hmac', 'ip-whitelist', 'both']),
   }),
-  queue: z.object({
-    enabled: z.boolean(),
-    queueUrl: z.string().optional(),
-  }).optional(),
+  queue: z
+    .object({
+      enabled: z.boolean(),
+      queueUrl: z.string().optional(),
+    })
+    .optional(),
 });
 
 // Main Manifest Schema
@@ -78,14 +80,18 @@ export const DeployManifestSchema = z.object({
     middleware: ArtifactSchema.optional(),
   }),
   isr: ISRConfigSchema.optional(),
-  environment: z.object({
-    variables: z.record(z.string()),
-    secrets: z.array(z.object({
-      name: z.string(),
-      lockboxId: z.string().optional(),
-      entryKey: z.string().optional(),
-    })),
-  }).optional(),
+  environment: z
+    .object({
+      variables: z.record(z.string()),
+      secrets: z.array(
+        z.object({
+          name: z.string(),
+          lockboxId: z.string().optional(),
+          entryKey: z.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
   deployment: z.object({
     region: z.string().default('ru-central1'),
     functions: z.object({
@@ -94,11 +100,13 @@ export const DeployManifestSchema = z.object({
         timeout: z.number().default(30),
         preparedInstances: z.number().default(0),
       }),
-      image: z.object({
-        memory: z.number().default(256),
-        timeout: z.number().default(30),
-        preparedInstances: z.number().default(0),
-      }).optional(),
+      image: z
+        .object({
+          memory: z.number().default(256),
+          timeout: z.number().default(30),
+          preparedInstances: z.number().default(0),
+        })
+        .optional(),
     }),
   }),
 });
@@ -114,7 +122,7 @@ export function validateManifest(manifest: unknown): DeployManifest {
 export function createDefaultManifest(
   buildId: string,
   nextVersion: string,
-  capabilities: Capabilities
+  capabilities: Capabilities,
 ): DeployManifest {
   return {
     schemaVersion: '1.0',

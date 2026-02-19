@@ -2,7 +2,6 @@ import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3
 import { Readable } from 'stream';
 import sharp from 'sharp';
 import crypto from 'crypto';
-import path from 'path';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from './server-handler.js';
 
 export interface ImageHandlerOptions {
@@ -43,17 +42,15 @@ export function createImageHandler(options: ImageHandlerOptions = {}) {
     formats = ['image/avif', 'image/webp'],
   } = options;
 
-  const s3Client = cacheBucket || sourcesBucket
-    ? new S3Client({
-        region,
-        endpoint,
-      })
-    : null;
+  const s3Client =
+    cacheBucket || sourcesBucket
+      ? new S3Client({
+          region,
+          endpoint,
+        })
+      : null;
 
-  return async (
-    event: APIGatewayProxyEventV2,
-    context: any
-  ): Promise<APIGatewayProxyResultV2> => {
+  return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     console.log('[Image] Handling request:', {
       path: event.rawPath,
       query: event.rawQueryString,
@@ -177,14 +174,14 @@ function generateCacheKey(params: ImageParams, accept: string): string {
 async function getFromCache(
   s3Client: S3Client,
   bucket: string,
-  key: string
+  key: string,
 ): Promise<APIGatewayProxyResultV2 | null> {
   try {
     const response = await s3Client.send(
       new GetObjectCommand({
         Bucket: bucket,
         Key: key,
-      })
+      }),
     );
 
     if (!response.Body) return null;
@@ -217,7 +214,7 @@ async function saveToCache(
   bucket: string,
   key: string,
   processed: { buffer: Buffer; format: string },
-  maxAge: number
+  maxAge: number,
 ): Promise<void> {
   try {
     await s3Client.send(
@@ -227,7 +224,7 @@ async function saveToCache(
         Body: processed.buffer,
         ContentType: processed.format,
         CacheControl: `public, max-age=${maxAge}`,
-      })
+      }),
     );
   } catch (error) {
     console.error('[Image] Cache save error:', error);
@@ -240,7 +237,7 @@ async function saveToCache(
 async function fetchSourceImage(
   url: string,
   s3Client: S3Client | null,
-  sourcesBucket?: string
+  sourcesBucket?: string,
 ): Promise<{ buffer: Buffer; contentType: string } | null> {
   try {
     // If URL is relative, try to fetch from S3
@@ -250,7 +247,7 @@ async function fetchSourceImage(
         new GetObjectCommand({
           Bucket: sourcesBucket,
           Key: key,
-        })
+        }),
       );
 
       if (response.Body) {
@@ -293,7 +290,7 @@ async function processImage(
     width?: number;
     quality: number;
     format: string;
-  }
+  },
 ): Promise<{ buffer: Buffer; format: string }> {
   let pipeline = sharp(input);
 
@@ -329,11 +326,7 @@ async function processImage(
 /**
  * Detect optimal image format
  */
-function detectFormat(
-  sourceType: string,
-  accept: string,
-  supportedFormats: string[]
-): string {
+function detectFormat(sourceType: string, accept: string, supportedFormats: string[]): string {
   // Don't convert SVG or ICO
   if (sourceType === SVG || sourceType === ICO) {
     return sourceType;

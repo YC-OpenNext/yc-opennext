@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Migration from Vercel - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/docs.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1976d2" />
+            <text
+              x="16"
+              y="21"
+              font-family="Arial"
+              font-size="14"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              YC
+            </text>
+          </svg>
+          YC-OpenNext
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#quickstart">Quick Start</a></li>
+          <li><a href="/docs.html" class="active">Documentation</a></li>
+          <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+        </ul>
+        <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </nav>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Getting Started</div>
+          <ul class="sidebar-links">
+            <li><a href="/getting-started/installation.html">Installation</a></li>
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Guides</div>
+          <ul class="sidebar-links">
+            <li><a href="/deployment.html">Deployment</a></li>
+            <li>
+              <a href="/guides/migration-from-vercel.html" class="active">Migration from Vercel</a>
+            </li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">API Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/api/cli-commands.html">CLI Commands</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Architecture</div>
+          <ul class="sidebar-links">
+            <li><a href="/architecture.html">System Architecture</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Examples</div>
+          <ul class="sidebar-links">
+            <li><a href="/examples/blog-with-isr.html">Blog with ISR</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <div class="docs-main">
+          <div class="breadcrumbs">
+            <a href="/docs.html">Docs</a>
+            <span class="separator">/</span>
+            <span>Guides</span>
+            <span class="separator">/</span>
+            <span>Migration from Vercel</span>
+          </div>
+
+          <div class="page-header">
+            <h1>Migration from Vercel</h1>
+            <p class="subtitle">
+              Comprehensive guide for migrating your Next.js application from Vercel to Yandex
+              Cloud.
+            </p>
+          </div>
+
+          <h2>Overview</h2>
+
+          <p>
+            YC-OpenNext provides Vercel-like functionality on Yandex Cloud with these key
+            differences:
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Vercel</th>
+                <th>YC-OpenNext</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Deployment</strong></td>
+                <td>Git-based</td>
+                <td>CLI/Terraform</td>
+              </tr>
+              <tr>
+                <td><strong>Edge Functions</strong></td>
+                <td>V8 Isolates</td>
+                <td>Node.js with polyfills</td>
+              </tr>
+              <tr>
+                <td><strong>Analytics</strong></td>
+                <td>Built-in</td>
+                <td>Custom implementation</td>
+              </tr>
+              <tr>
+                <td><strong>Preview URLs</strong></td>
+                <td>Automatic</td>
+                <td>Manual setup</td>
+              </tr>
+              <tr>
+                <td><strong>Global CDN</strong></td>
+                <td>Included</td>
+                <td>Optional YC CDN</td>
+              </tr>
+              <tr>
+                <td><strong>Pricing</strong></td>
+                <td>Per-seat + usage</td>
+                <td>Pay-as-you-go</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Pre-Migration Checklist</h2>
+
+          <p>Before migrating, ensure you have:</p>
+
+          <ul class="checklist">
+            <li>Exported environment variables from Vercel</li>
+            <li>Documented custom headers and redirects</li>
+            <li>Listed all domains and subdomains</li>
+            <li>Backed up any Vercel-specific configurations</li>
+            <li>Reviewed function regions and requirements</li>
+            <li>Checked for Vercel-specific API usage</li>
+          </ul>
+
+          <h2>Step 1: Export from Vercel</h2>
+
+          <h3>Export Environment Variables</h3>
+
+          <pre><code class="language-bash"># Install Vercel CLI if not already installed
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Pull environment variables
+vercel env pull .env.production
+
+# List all environment variables
+vercel env ls</code></pre>
+
+          <h3>Export Project Settings</h3>
+
+          <pre><code class="language-bash"># Get project configuration
+vercel project ls
+vercel project &lt;project-name&gt; --json &gt; vercel-config.json
+
+# Download current deployment
+vercel pull</code></pre>
+
+          <h2>Step 2: Prepare Your Next.js Application</h2>
+
+          <h3>Update Configuration</h3>
+
+          <h4>vercel.json &rarr; yc-opennext.config.js</h4>
+
+          <p><strong>Before (vercel.json):</strong></p>
+
+          <pre><code class="language-json">{
+  "functions": {
+    "pages/api/hello.js": {
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/old-page",
+      "destination": "/new-page",
+      "permanent": true
+    }
+  ]
+}</code></pre>
+
+          <p><strong>After (next.config.js):</strong></p>
+
+          <pre><code class="language-javascript">module.exports = {
+  output: 'standalone',
+
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      {
+        source: '/old-page',
+        destination: '/new-page',
+        permanent: true,
+      },
+    ];
+  },
+};</code></pre>
+
+          <h3>Environment Variables</h3>
+
+          <p>Create <code>.env.production</code> for YC-OpenNext:</p>
+
+          <pre><code class="language-bash"># Vercel System Variables &rarr; YC Equivalents
+NEXT_PUBLIC_VERCEL_URL &rarr; NEXT_PUBLIC_APP_URL
+VERCEL_ENV &rarr; NODE_ENV
+VERCEL_REGION &rarr; YC_REGION
+
+# Add YC-specific variables
+YC_CLOUD_ID=your-cloud-id
+YC_FOLDER_ID=your-folder-id
+BUILD_ID=your-build-id</code></pre>
+
+          <h3>Update API Routes</h3>
+
+          <h4>Vercel-specific APIs</h4>
+
+          <p>Replace Vercel-specific imports:</p>
+
+          <p><strong>Before:</strong></p>
+
+          <pre><code class="language-javascript">// pages/api/og.js
+import { ImageResponse } from '@vercel/og';
+
+export default function handler() {
+  return new ImageResponse(/* ... */);
+}</code></pre>
+
+          <p><strong>After:</strong></p>
+
+          <pre><code class="language-javascript">// pages/api/og.js
+import { ImageResponse } from '@yc-opennext/og-image';
+// Or use alternative like @napi-rs/canvas
+
+export default function handler() {
+  // Implement OG image generation
+}</code></pre>
+
+          <h4>Edge Runtime &rarr; Node.js</h4>
+
+          <p><strong>Before:</strong></p>
+
+          <pre><code class="language-javascript">// pages/api/edge.js
+export const config = {
+  runtime: 'edge',
+};
+
+export default function handler(request) {
+  return new Response('Hello from Edge!');
+}</code></pre>
+
+          <p><strong>After:</strong></p>
+
+          <pre><code class="language-javascript">// pages/api/edge.js
+// No edge runtime config needed
+import { NextResponse } from 'next/server';
+
+export default function handler(request) {
+  return NextResponse.json({ message: 'Hello from YC!' });
+}</code></pre>
+
+          <h2>Step 3: Build and Test Locally</h2>
+
+          <h3>Verify Compatibility</h3>
+
+          <pre><code class="language-bash"># Analyze your application
+yc-opennext analyze --project . --strict
+
+# Review compatibility report
+cat ./capabilities.json</code></pre>
+
+          <h3>Test Build</h3>
+
+          <pre><code class="language-bash"># Build for YC
+yc-opennext build \
+  --project . \
+  --output ./yc-build \
+  --standalone
+
+# Check build artifacts
+ls -la ./yc-build/artifacts/</code></pre>
+
+          <h2>Step 4: Set Up Yandex Cloud Infrastructure</h2>
+
+          <h3>Create Required Resources</h3>
+
+          <pre><code class="language-bash"># Create Object Storage buckets
+yc storage bucket create --name my-app-assets
+yc storage bucket create --name my-app-cache
+
+# Create service account
+yc iam service-account create --name my-app-sa
+
+# Create YDB database (for ISR)
+yc ydb database create --name my-app-db --serverless</code></pre>
+
+          <h3>Configure Terraform</h3>
+
+          <p>Create <code>terraform/main.tf</code>:</p>
+
+          <pre><code class="language-hcl">module "nextjs_app" {
+  source = "github.com/yc-opennext/yc-opennext//terraform/modules/nextjs_yc"
+
+  app_name      = "my-vercel-app"
+  env           = "production"
+  cloud_id      = var.cloud_id
+  folder_id     = var.folder_id
+  domain_name   = "app.example.com"
+
+  # Match Vercel function configuration
+  function_memory = {
+    server = 1024  # Match Vercel's function size
+    image  = 512
+  }
+
+  function_timeout = {
+    server = 10    # Match Vercel's maxDuration
+    image  = 10
+  }
+
+  # Enable features you were using on Vercel
+  enable_isr = true
+  enable_cdn = true  # Replaces Vercel's global CDN
+}</code></pre>
+
+          <h2>Step 5: Migrate Domains</h2>
+
+          <h3>DNS Migration</h3>
+
+          <p>1. <strong>Note current Vercel DNS settings:</strong></p>
+
+          <pre><code class="language-bash"># Get current DNS records
+dig app.example.com
+dig www.app.example.com</code></pre>
+
+          <p>2. <strong>Update DNS to point to YC:</strong></p>
+
+          <pre><code class="language-bash"># After deploying to YC, get the API Gateway domain
+terraform output api_gateway_domain
+
+# Update your DNS:
+# A/CNAME app.example.com &rarr; &lt;api-gateway-domain&gt;</code></pre>
+
+          <p>
+            3. <strong>SSL Certificates:</strong> YC-OpenNext automatically provisions certificates
+            via Certificate Manager.
+          </p>
+
+          <h2>Step 6: Deploy to YC</h2>
+
+          <h3>Initial Deployment</h3>
+
+          <pre><code class="language-bash"># Upload artifacts
+yc-opennext upload \
+  --build-dir ./yc-build \
+  --bucket my-app-assets \
+  --prefix v1
+
+# Deploy infrastructure
+cd terraform
+terraform init
+terraform apply -var="build_id=v1"</code></pre>
+
+          <h3>Verify Deployment</h3>
+
+          <pre><code class="language-bash"># Get application URL
+terraform output app_url
+
+# Test endpoints
+curl https://&lt;api-gateway-domain&gt;
+curl https://&lt;api-gateway-domain&gt;/api/hello
+
+# Check function logs
+yc serverless function logs --name my-app-production-server-function</code></pre>
+
+          <h2>Step 7: Migrate CI/CD</h2>
+
+          <h3>From Vercel GitHub Integration</h3>
+
+          <p><strong>Before (Vercel):</strong> Automatic deployments on push</p>
+
+          <p><strong>After (GitHub Actions):</strong></p>
+
+          <p><code>.github/workflows/deploy.yml</code>:</p>
+
+          <pre><code class="language-yaml">name: Deploy to YC
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Package for YC
+        run: |
+          npx yc-opennext build \
+            --project . \
+            --output ./yc-build \
+            --build-id ${{ github.sha }}
+
+      - name: Upload to YC
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_KEY }}
+        run: |
+          npx yc-opennext upload \
+            --build-dir ./yc-build \
+            --bucket ${{ vars.ASSETS_BUCKET }} \
+            --prefix ${{ github.sha }}
+
+      - name: Deploy with Terraform
+        env:
+          YC_TOKEN: ${{ secrets.YC_TOKEN }}
+        run: |
+          cd terraform
+          terraform init
+          terraform apply \
+            -var="build_id=${{ github.sha }}" \
+            -auto-approve</code></pre>
+
+          <h2>Feature-Specific Migration</h2>
+
+          <h3>Incremental Static Regeneration (ISR)</h3>
+
+          <p>Vercel ISR &rarr; YC ISR works the same way:</p>
+
+          <pre><code class="language-javascript">// pages/blog/[slug].js or app/blog/[slug]/page.js
+export async function getStaticProps() {
+  return {
+    props: {
+      /* ... */
+    },
+    revalidate: 60, // Works identically
+  };
+}</code></pre>
+
+          <h3>Image Optimization</h3>
+
+          <pre><code class="language-javascript">// No changes required for basic usage
+import Image from 'next/image';
+
+&lt;Image src="/hero.jpg" width={1200} height={600} alt="Hero" /&gt;;</code></pre>
+
+          <h3>Middleware</h3>
+
+          <pre><code class="language-javascript">// middleware.js works but runs in Node.js, not Edge Runtime
+export function middleware(request) {
+  // Some Vercel Edge APIs might need adjustment
+  const response = NextResponse.next();
+  response.headers.set('x-custom', 'header');
+  return response;
+}</code></pre>
+
+          <h3>Analytics</h3>
+
+          <pre><code class="language-javascript">// Remove Vercel Analytics
+// import { Analytics } from '@vercel/analytics/react';
+
+// Add your preferred analytics
+import { GoogleAnalytics } from '@next/third-parties/google';</code></pre>
+
+          <h2>Common Migration Issues</h2>
+
+          <h3>Issue 1: Edge Runtime Functions</h3>
+
+          <p><strong>Problem:</strong> Functions using Edge Runtime don't work.</p>
+
+          <p>
+            <strong>Solution:</strong> Remove <code>runtime: 'edge'</code> config. Functions run in
+            Node.js on YC.
+          </p>
+
+          <h3>Issue 2: Vercel KV/Postgres</h3>
+
+          <p><strong>Problem:</strong> Using Vercel's managed databases.</p>
+
+          <p><strong>Solution:</strong></p>
+
+          <ul>
+            <li>Replace Vercel KV with YDB or Redis</li>
+            <li>Replace Vercel Postgres with YDB or Managed PostgreSQL</li>
+          </ul>
+
+          <h3>Issue 3: Preview Deployments</h3>
+
+          <p><strong>Problem:</strong> No automatic preview deployments.</p>
+
+          <p><strong>Solution:</strong> Set up multiple environments:</p>
+
+          <pre><code class="language-bash"># Deploy preview
+terraform workspace new preview
+terraform apply -var="env=preview" -var="build_id=pr-123"</code></pre>
+
+          <h3>Issue 4: Cron Jobs</h3>
+
+          <p><strong>Problem:</strong> Vercel cron jobs need replacement.</p>
+
+          <p><strong>Solution:</strong> Use YC Cloud Functions with triggers:</p>
+
+          <pre><code class="language-javascript">// Create a separate function for cron
+export async function cronHandler() {
+  // Your cron logic
+}</code></pre>
+
+          <h2>Performance Comparison</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Vercel</th>
+                <th>YC-OpenNext</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Cold Start</strong></td>
+                <td>50-250ms</td>
+                <td>100-500ms</td>
+                <td>Use prepared instances</td>
+              </tr>
+              <tr>
+                <td><strong>Warm Response</strong></td>
+                <td>10-50ms</td>
+                <td>10-50ms</td>
+                <td>Comparable</td>
+              </tr>
+              <tr>
+                <td><strong>Build Time</strong></td>
+                <td>1-3 min</td>
+                <td>2-4 min</td>
+                <td>Depends on app size</td>
+              </tr>
+              <tr>
+                <td><strong>Deploy Time</strong></td>
+                <td>30-60s</td>
+                <td>60-120s</td>
+                <td>Terraform apply time</td>
+              </tr>
+              <tr>
+                <td><strong>Max Timeout</strong></td>
+                <td>5 min (Pro)</td>
+                <td>10 min</td>
+                <td>YC has higher limit</td>
+              </tr>
+              <tr>
+                <td><strong>Max Payload</strong></td>
+                <td>4.5MB</td>
+                <td>10MB</td>
+                <td>YC has higher limit</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Cost Comparison</h2>
+
+          <p>Rough monthly estimates for a typical app:</p>
+
+          <p><strong>Vercel Pro ($20/user + usage):</strong></p>
+
+          <ul>
+            <li>Team of 3: $60</li>
+            <li>1M requests: $40</li>
+            <li>Bandwidth: $40</li>
+            <li><strong>Total: ~$140/month</strong></li>
+          </ul>
+
+          <p><strong>YC-OpenNext (pay-as-you-go):</strong></p>
+
+          <ul>
+            <li>Functions: $20</li>
+            <li>Storage: $5</li>
+            <li>API Gateway: $10</li>
+            <li>YDB: $15</li>
+            <li><strong>Total: ~$50/month</strong></li>
+          </ul>
+
+          <h2>Rollback Plan</h2>
+
+          <p>If you need to rollback to Vercel:</p>
+
+          <ol>
+            <li>Keep Vercel project paused (not deleted)</li>
+            <li>Update DNS back to Vercel</li>
+            <li>Redeploy latest version on Vercel</li>
+            <li>Migrate environment variables back</li>
+          </ol>
+
+          <h2>Post-Migration Checklist</h2>
+
+          <ul class="checklist">
+            <li>All pages load correctly</li>
+            <li>API routes respond</li>
+            <li>Images optimize properly</li>
+            <li>ISR pages revalidate</li>
+            <li>Middleware executes</li>
+            <li>Forms submit successfully</li>
+            <li>Authentication works</li>
+            <li>Payment processing works</li>
+            <li>Analytics tracking works</li>
+            <li>SEO meta tags present</li>
+            <li>Sitemap accessible</li>
+            <li>Robots.txt served</li>
+            <li>Custom headers applied</li>
+            <li>Redirects working</li>
+            <li>404 page displays</li>
+            <li>Error handling works</li>
+          </ul>
+
+          <h2>Getting Support</h2>
+
+          <ul>
+            <li><strong>Documentation</strong>: <a href="/docs.html">YC-OpenNext Docs</a></li>
+            <li>
+              <strong>GitHub Issues</strong>:
+              <a href="https://github.com/yc-opennext/yc-opennext/issues" target="_blank"
+                >Report problems</a
+              >
+            </li>
+            <li>
+              <strong>Community</strong>:
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+            <li>
+              <strong>Vercel Migration Help</strong>: Tag issues with
+              <code>migration-from-vercel</code>
+            </li>
+          </ul>
+
+          <h2>Summary</h2>
+
+          <p>Migrating from Vercel to YC-OpenNext involves:</p>
+
+          <ol>
+            <li><strong>Configuration changes</strong>: Update configs for YC compatibility</li>
+            <li><strong>Build process</strong>: Use YC-OpenNext CLI instead of Vercel CLI</li>
+            <li><strong>Infrastructure</strong>: Provision YC resources with Terraform</li>
+            <li><strong>CI/CD</strong>: Replace Vercel's Git integration with GitHub Actions</li>
+            <li><strong>Monitoring</strong>: Set up custom monitoring/analytics</li>
+          </ol>
+
+          <p>
+            Most Next.js features work identically, with the main differences being in edge runtime
+            support and deployment process.
+          </p>
+
+          <!-- Previous/Next Navigation -->
+          <div class="page-nav">
+            <a href="/deployment.html" class="prev">
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">Deployment</span>
+            </a>
+            <a href="/api/cli-commands.html" class="next">
+              <span class="nav-label">Next</span>
+              <span class="nav-title">CLI Reference</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/docs.html">Documentation</a></li>
+            <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            <li><a href="/architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+            <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul class="footer-links">
+            <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+      </div>
+    </footer>
+
+    <button
+      class="sidebar-toggle"
+      onclick="document.querySelector('.sidebar').classList.toggle('open')"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script>
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      });
+    </script>
+  </body>
+</html>

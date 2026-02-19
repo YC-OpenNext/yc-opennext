@@ -26,8 +26,16 @@ locals {
   # Resource naming
   prefix = "${var.app_name}-${var.env}"
 
-  # Common tags
-  common_tags = {
+  # Common tags (for yandex_function - requires set of strings)
+  common_tags = [
+    "app:${var.app_name}",
+    "env:${var.env}",
+    "build_id:${var.build_id}",
+    "managed_by:terraform"
+  ]
+
+  # Common labels (for other resources - requires map of strings)
+  common_labels = {
     app        = var.app_name
     env        = var.env
     build_id   = var.build_id
@@ -44,7 +52,7 @@ module "security" {
 
   app_name = var.app_name
   env      = var.env
-  tags     = local.common_tags
+  tags     = local.common_labels
 }
 
 # ============================================================================
@@ -55,15 +63,8 @@ module "security" {
 resource "yandex_storage_bucket" "assets" {
   bucket = "${local.prefix}-assets-${random_id.bucket_suffix.hex}"
 
-  # Encryption
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = module.security.kms_key_id
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+  # Encryption - Yandex Object Storage encrypts all data at rest by default
+  # No need to specify encryption configuration as it's always enabled
 
   # Versioning for rollback capability
   versioning {
@@ -88,30 +89,13 @@ resource "yandex_storage_bucket" "assets" {
     }
   }
 
-  # Access control
+  # Access control - bucket is private by default
   acl = "private"
 
-  # Force HTTPS
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Deny"
-        Principal = "*"
-        Action = "s3:*"
-        Resource = [
-          "arn:aws:s3:::${local.prefix}-assets-${random_id.bucket_suffix.hex}/*"
-        ]
-        Condition = {
-          Bool = {
-            "aws:SecureTransport" = "false"
-          }
-        }
-      }
-    ]
-  })
+  # Yandex Object Storage enforces HTTPS by default
+  # No need for additional policy to force HTTPS
 
-  tags = local.common_tags
+  tags = local.common_labels
 }
 
 # Cache bucket for ISR
@@ -120,15 +104,8 @@ resource "yandex_storage_bucket" "cache" {
 
   bucket = "${local.prefix}-cache-${random_id.bucket_suffix.hex}"
 
-  # Encryption
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = module.security.kms_key_id
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+  # Encryption - Yandex Object Storage encrypts all data at rest by default
+  # No need to specify encryption configuration as it's always enabled
 
   versioning {
     enabled = true
@@ -151,45 +128,53 @@ resource "yandex_storage_bucket" "cache" {
 
   acl = "private"
 
-  tags = local.common_tags
+  tags = local.common_labels
 }
 
 # ============================================================================
-# YDB DocAPI for ISR Metadata
+# YDB Serverless Database for ISR Metadata
 # ============================================================================
 
-module "ydb_docapi" {
+# Create YDB Serverless database for ISR metadata
+resource "yandex_ydb_database_serverless" "isr" {
   count = var.enable_isr ? 1 : 0
 
-  source = "../ydb_docapi"
+  name        = "${local.prefix}-isr-db"
+  description = "Serverless YDB database for ISR metadata"
 
-  app_name = var.app_name
-  env      = var.env
-
-  # ISR tables configuration
-  tables = {
-    isr_entries = {
-      hash_key = "pk"
-      range_key = "sk"
-      ttl_attribute = "ttl"
-    }
-    isr_tags = {
-      hash_key = "pk"
-      range_key = "sk"
-      ttl_attribute = "ttl"
-    }
-    isr_paths = {
-      hash_key = "pk"
-      range_key = "sk"
-      ttl_attribute = "ttl"
-    }
-    isr_locks = {
-      hash_key = "pk"
-      ttl_attribute = "ttl"
-    }
+  serverless_database {
+    enable_throttling_rcu_limit = false
+    provisioned_rcu_limit       = 10
+    storage_size_limit          = 10 # GB
+    throttling_rcu_limit        = 0
   }
 
-  tags = local.common_tags
+  labels = local.common_labels
+}
+
+# Service account for YDB access
+resource "yandex_iam_service_account" "ydb" {
+  count = var.enable_isr ? 1 : 0
+
+  name        = "${local.prefix}-ydb-sa"
+  description = "Service account for YDB access"
+}
+
+# Grant YDB editor role
+resource "yandex_resourcemanager_folder_iam_member" "ydb_editor" {
+  count = var.enable_isr ? 1 : 0
+
+  folder_id = var.folder_id
+  role      = "ydb.editor"
+  member    = "serviceAccount:${yandex_iam_service_account.ydb[0].id}"
+}
+
+# Create static access key for YDB
+resource "yandex_iam_service_account_static_access_key" "ydb" {
+  count = var.enable_isr ? 1 : 0
+
+  service_account_id = yandex_iam_service_account.ydb[0].id
+  description        = "Static key for YDB access"
 }
 
 # ============================================================================
@@ -235,7 +220,7 @@ resource "yandex_function" "server" {
   description        = "Next.js SSR and API handler"
   user_hash          = var.build_id
   runtime            = "nodejs18"
-  entrypoint        = local.manifest.artifacts.server.entry
+  entrypoint         = local.manifest.artifacts.server.entry
   memory             = local.manifest.deployment.functions.server.memory
   execution_timeout  = local.manifest.deployment.functions.server.timeout
   service_account_id = yandex_iam_service_account.functions.id
@@ -248,7 +233,10 @@ resource "yandex_function" "server" {
       NODE_ENV             = "production"
       CACHE_BUCKET         = var.enable_isr ? yandex_storage_bucket.cache[0].bucket : ""
       ASSETS_BUCKET        = yandex_storage_bucket.assets.bucket
-      YDB_DOCAPI_ENDPOINT  = var.enable_isr ? module.ydb_docapi[0].endpoint : ""
+      YDB_ENDPOINT         = var.enable_isr ? yandex_ydb_database_serverless.isr[0].ydb_full_endpoint : ""
+      YDB_DATABASE         = var.enable_isr ? yandex_ydb_database_serverless.isr[0].database_path : ""
+      YDB_ACCESS_KEY_ID    = var.enable_isr ? yandex_iam_service_account_static_access_key.ydb[0].access_key : ""
+      YDB_SECRET_KEY       = var.enable_isr ? yandex_iam_service_account_static_access_key.ydb[0].secret_key : ""
       REVALIDATE_SECRET_ID = module.security.revalidate_secret_id
     }
   )
@@ -267,33 +255,6 @@ resource "yandex_function" "server" {
   }
 
   tags = local.common_tags
-
-  # Log configuration
-  log_options {
-    disabled = false
-    min_level = "INFO"
-  }
-}
-
-# Publish function version
-resource "yandex_function_version" "server" {
-  count = local.manifest.capabilities.needsServer ? 1 : 0
-
-  function_id = yandex_function.server[0].id
-  runtime     = yandex_function.server[0].runtime
-  entrypoint  = yandex_function.server[0].entrypoint
-  memory      = yandex_function.server[0].memory
-  execution_timeout = yandex_function.server[0].execution_timeout
-  service_account_id = yandex_function.server[0].service_account_id
-  environment = yandex_function.server[0].environment
-
-  # Use content from function
-  package_source {
-    function_id = yandex_function.server[0].id
-    version_id  = yandex_function.server[0].version
-  }
-
-  tags = local.common_tags
 }
 
 # Image optimization function
@@ -304,7 +265,7 @@ resource "yandex_function" "image" {
   description        = "Next.js image optimization handler"
   user_hash          = var.build_id
   runtime            = "nodejs18"
-  entrypoint        = local.manifest.artifacts.image.entry
+  entrypoint         = local.manifest.artifacts.image.entry
   memory             = local.manifest.deployment.functions.image.memory
   execution_timeout  = local.manifest.deployment.functions.image.timeout
   service_account_id = yandex_iam_service_account.functions.id
@@ -324,31 +285,6 @@ resource "yandex_function" "image" {
   }
 
   tags = local.common_tags
-
-  log_options {
-    disabled  = false
-    min_level = "INFO"
-  }
-}
-
-# Publish image function version
-resource "yandex_function_version" "image" {
-  count = local.manifest.capabilities.needsImage ? 1 : 0
-
-  function_id = yandex_function.image[0].id
-  runtime     = yandex_function.image[0].runtime
-  entrypoint  = yandex_function.image[0].entrypoint
-  memory      = yandex_function.image[0].memory
-  execution_timeout = yandex_function.image[0].execution_timeout
-  service_account_id = yandex_function.image[0].service_account_id
-  environment = yandex_function.image[0].environment
-
-  package_source {
-    function_id = yandex_function.image[0].id
-    version_id  = yandex_function.image[0].version
-  }
-
-  tags = local.common_tags
 }
 
 # ============================================================================
@@ -358,16 +294,16 @@ resource "yandex_function_version" "image" {
 # Generate OpenAPI spec from template
 locals {
   openapi_spec = templatefile("${path.module}/templates/openapi.yaml.tpl", {
-    api_name             = "${local.prefix}-api"
-    assets_bucket        = yandex_storage_bucket.assets.bucket
-    build_id             = var.build_id
-    server_function_id   = local.manifest.capabilities.needsServer ? yandex_function.server[0].id : ""
-    server_version_id    = local.manifest.capabilities.needsServer ? yandex_function_version.server[0].id : ""
-    image_function_id    = local.manifest.capabilities.needsImage ? yandex_function.image[0].id : ""
-    image_version_id     = local.manifest.capabilities.needsImage ? yandex_function_version.image[0].id : ""
-    service_account_id   = yandex_iam_service_account.functions.id
-    has_server          = local.manifest.capabilities.needsServer
-    has_image           = local.manifest.capabilities.needsImage
+    api_name           = "${local.prefix}-api"
+    assets_bucket      = yandex_storage_bucket.assets.bucket
+    build_id           = var.build_id
+    server_function_id = local.manifest.capabilities.needsServer ? yandex_function.server[0].id : ""
+    server_version_id  = local.manifest.capabilities.needsServer ? yandex_function.server[0].version : ""
+    image_function_id  = local.manifest.capabilities.needsImage ? yandex_function.image[0].id : ""
+    image_version_id   = local.manifest.capabilities.needsImage ? yandex_function.image[0].version : ""
+    service_account_id = yandex_iam_service_account.functions.id
+    has_server         = local.manifest.capabilities.needsServer
+    has_image          = local.manifest.capabilities.needsImage
   })
 }
 
@@ -377,7 +313,7 @@ resource "yandex_api_gateway" "main" {
 
   spec = local.openapi_spec
 
-  labels = local.common_tags
+  labels = local.common_labels
 }
 
 # ============================================================================
@@ -392,7 +328,7 @@ resource "yandex_dns_zone" "main" {
   zone        = "${var.domain_name}."
   public      = true
 
-  labels = local.common_tags
+  labels = local.common_labels
 }
 
 resource "yandex_cm_certificate" "main" {
@@ -403,7 +339,7 @@ resource "yandex_cm_certificate" "main" {
     challenge_type = "DNS_CNAME"
   }
 
-  labels = local.common_tags
+  labels = local.common_labels
 }
 
 # DNS validation records
@@ -442,7 +378,7 @@ resource "yandex_logging_group" "functions" {
   folder_id        = var.folder_id
   retention_period = "168h" # 7 days
 
-  labels = local.common_tags
+  labels = local.common_labels
 }
 
 # ============================================================================

@@ -6,13 +6,13 @@ Complete reference for all YC-OpenNext CLI commands and options.
 
 Options available for all commands:
 
-| Option | Alias | Description | Default |
-|--------|-------|-------------|---------|
-| `--help` | `-h` | Show help message | - |
-| `--version` | `-V` | Show version number | - |
-| `--verbose` | `-v` | Enable verbose output | `false` |
-| `--quiet` | `-q` | Suppress non-error output | `false` |
-| `--config` | `-c` | Path to config file | `yc-opennext.config.js` |
+| Option      | Alias | Description               | Default                 |
+| ----------- | ----- | ------------------------- | ----------------------- |
+| `--help`    | `-h`  | Show help message         | -                       |
+| `--version` | `-V`  | Show version number       | -                       |
+| `--verbose` | `-v`  | Enable verbose output     | `false`                 |
+| `--quiet`   | `-q`  | Suppress non-error output | `false`                 |
+| `--config`  | `-c`  | Path to config file       | `yc-opennext.config.js` |
 
 ## Commands
 
@@ -26,12 +26,12 @@ yc-opennext analyze [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--project <path>` | Yes | Path to Next.js project | - |
-| `--output <dir>` | No | Output directory for analysis results | - |
-| `--format <type>` | No | Output format (json, yaml, table) | `json` |
-| `--strict` | No | Fail on compatibility warnings | `false` |
+| Option             | Required | Description                           | Default |
+| ------------------ | -------- | ------------------------------------- | ------- |
+| `--project <path>` | Yes      | Path to Next.js project               | -       |
+| `--output <dir>`   | No       | Output directory for analysis results | -       |
+| `--format <type>`  | No       | Output format (json, yaml, table)     | `json`  |
+| `--strict`         | No       | Fail on compatibility warnings        | `false` |
 
 #### Examples
 
@@ -86,15 +86,15 @@ yc-opennext build [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--project <path>` | Yes | Path to Next.js project | - |
-| `--output <dir>` | Yes | Output directory for build artifacts | - |
-| `--build-id <id>` | No | Custom build identifier | Auto-generated |
-| `--standalone` | No | Build in standalone mode | `false` |
-| `--skip-build` | No | Skip Next.js build step | `false` |
-| `--minify` | No | Minify function code | `true` |
-| `--split-chunks` | No | Split large functions | `false` |
+| Option             | Required | Description                          | Default        |
+| ------------------ | -------- | ------------------------------------ | -------------- |
+| `--project <path>` | Yes      | Path to Next.js project              | -              |
+| `--output <dir>`   | Yes      | Output directory for build artifacts | -              |
+| `--build-id <id>`  | No       | Custom build identifier              | Auto-generated |
+| `--standalone`     | No       | Build in standalone mode             | `false`        |
+| `--skip-build`     | No       | Skip Next.js build step              | `false`        |
+| `--minify`         | No       | Minify function code                 | `true`         |
+| `--split-chunks`   | No       | Split large functions                | `false`        |
 
 #### Examples
 
@@ -139,17 +139,17 @@ yc-opennext upload [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--build-dir <dir>` | Yes | Directory containing build artifacts | - |
-| `--bucket <name>` | Yes | S3 bucket for assets | - |
-| `--prefix <prefix>` | Yes | S3 key prefix (build ID) | - |
-| `--cache-bucket <name>` | No | S3 bucket for ISR cache | - |
-| `--region <region>` | No | Yandex Cloud region | `ru-central1` |
-| `--endpoint <url>` | No | S3 endpoint URL | `https://storage.yandexcloud.net` |
-| `--parallel <n>` | No | Number of parallel uploads | `4` |
-| `--dry-run` | No | Show what would be uploaded | `false` |
-| `--ignore <pattern>` | No | Files to ignore (glob pattern) | - |
+| Option                  | Required | Description                          | Default                           |
+| ----------------------- | -------- | ------------------------------------ | --------------------------------- |
+| `--build-dir <dir>`     | Yes      | Directory containing build artifacts | -                                 |
+| `--bucket <name>`       | Yes      | S3 bucket for assets                 | -                                 |
+| `--prefix <prefix>`     | Yes      | S3 key prefix (build ID)             | -                                 |
+| `--cache-bucket <name>` | No       | S3 bucket for ISR cache              | -                                 |
+| `--region <region>`     | No       | Yandex Cloud region                  | `ru-central1`                     |
+| `--endpoint <url>`      | No       | S3 endpoint URL                      | `https://storage.yandexcloud.net` |
+| `--parallel <n>`        | No       | Number of parallel uploads           | `4`                               |
+| `--dry-run`             | No       | Show what would be uploaded          | `false`                           |
+| `--ignore <pattern>`    | No       | Files to ignore (glob pattern)       | -                                 |
 
 #### Examples
 
@@ -203,12 +203,12 @@ yc-opennext deploy-manifest [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--build-dir <dir>` | Yes | Build artifacts directory | - |
-| `--out <path>` | Yes | Output manifest path | - |
-| `--merge <path>` | No | Existing manifest to merge | - |
-| `--override <json>` | No | JSON string with overrides | - |
+| Option              | Required | Description                | Default |
+| ------------------- | -------- | -------------------------- | ------- |
+| `--build-dir <dir>` | Yes      | Build artifacts directory  | -       |
+| `--out <path>`      | Yes      | Output manifest path       | -       |
+| `--merge <path>`    | No       | Existing manifest to merge | -       |
+| `--override <json>` | No       | JSON string with overrides | -       |
 
 #### Examples
 
@@ -243,11 +243,11 @@ yc-opennext plan [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--project <path>` | Yes | Path to Next.js project | - |
-| `--compare <version>` | No | Compare with previous version | - |
-| `--cost-estimate` | No | Show cost estimation | `false` |
+| Option                | Required | Description                   | Default |
+| --------------------- | -------- | ----------------------------- | ------- |
+| `--project <path>`    | Yes      | Path to Next.js project       | -       |
+| `--compare <version>` | No       | Compare with previous version | -       |
+| `--cost-estimate`     | No       | Show cost estimation          | `false` |
 
 #### Examples
 
@@ -274,11 +274,11 @@ yc-opennext validate [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--manifest <path>` | No | Manifest file to validate | `deploy.manifest.json` |
-| `--terraform <dir>` | No | Terraform configuration to validate | - |
-| `--bucket <name>` | No | Verify bucket exists and is accessible | - |
+| Option              | Required | Description                            | Default                |
+| ------------------- | -------- | -------------------------------------- | ---------------------- |
+| `--manifest <path>` | No       | Manifest file to validate              | `deploy.manifest.json` |
+| `--terraform <dir>` | No       | Terraform configuration to validate    | -                      |
+| `--bucket <name>`   | No       | Verify bucket exists and is accessible | -                      |
 
 #### Examples
 
@@ -305,11 +305,11 @@ yc-opennext rollback [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--to <version>` | Yes | Version to rollback to | - |
-| `--terraform-dir <dir>` | No | Terraform directory | `./terraform` |
-| `--auto-approve` | No | Skip confirmation | `false` |
+| Option                  | Required | Description            | Default       |
+| ----------------------- | -------- | ---------------------- | ------------- |
+| `--to <version>`        | Yes      | Version to rollback to | -             |
+| `--terraform-dir <dir>` | No       | Terraform directory    | `./terraform` |
+| `--auto-approve`        | No       | Skip confirmation      | `false`       |
 
 #### Examples
 
@@ -333,12 +333,12 @@ yc-opennext logs [options]
 
 #### Options
 
-| Option | Required | Description | Default |
-|--------|----------|-------------|---------|
-| `--function <name>` | No | Function name | All functions |
-| `--tail` | No | Follow log output | `false` |
-| `--since <time>` | No | Show logs since timestamp | `1h` |
-| `--filter <pattern>` | No | Filter log entries | - |
+| Option               | Required | Description               | Default       |
+| -------------------- | -------- | ------------------------- | ------------- |
+| `--function <name>`  | No       | Function name             | All functions |
+| `--tail`             | No       | Follow log output         | `false`       |
+| `--since <time>`     | No       | Show logs since timestamp | `1h`          |
+| `--filter <pattern>` | No       | Filter log entries        | -             |
 
 #### Examples
 
@@ -402,16 +402,16 @@ module.exports = {
 
 ## Exit Codes
 
-| Code | Description |
-|------|-------------|
-| `0` | Success |
-| `1` | General error |
-| `2` | Invalid arguments |
-| `3` | Build failed |
-| `4` | Upload failed |
-| `5` | Validation failed |
-| `6` | Compatibility error |
-| `7` | Authentication error |
+| Code | Description          |
+| ---- | -------------------- |
+| `0`  | Success              |
+| `1`  | General error        |
+| `2`  | Invalid arguments    |
+| `3`  | Build failed         |
+| `4`  | Upload failed        |
+| `5`  | Validation failed    |
+| `6`  | Compatibility error  |
+| `7`  | Authentication error |
 
 ## Debugging
 

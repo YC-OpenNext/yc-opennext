@@ -27,6 +27,7 @@ pnpm setup
 You have several options to run the CLI:
 
 #### Option A: Using the built version
+
 ```bash
 # Build first
 pnpm build
@@ -37,6 +38,7 @@ pnpm cli build --project ../my-nextjs-app --output ./test-build
 ```
 
 #### Option B: Using development mode (with TypeScript)
+
 ```bash
 # Run directly from TypeScript source (no build needed)
 pnpm cli:dev analyze --project ../my-nextjs-app
@@ -44,6 +46,7 @@ pnpm cli:dev build --project ../my-nextjs-app --output ./test-build
 ```
 
 #### Option C: Link globally for testing
+
 ```bash
 # Build and link globally
 cd packages/yc-opennext
@@ -410,6 +413,7 @@ less profile.txt
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on:
+
 - Code style
 - Commit messages
 - Pull request process
