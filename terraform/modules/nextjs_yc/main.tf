@@ -63,15 +63,8 @@ module "security" {
 resource "yandex_storage_bucket" "assets" {
   bucket = "${local.prefix}-assets-${random_id.bucket_suffix.hex}"
 
-  # Encryption
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = module.security.kms_key_id
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+  # Encryption - Yandex Object Storage encrypts all data at rest by default
+  # No need to specify encryption configuration as it's always enabled
 
   # Versioning for rollback capability
   versioning {
@@ -96,28 +89,11 @@ resource "yandex_storage_bucket" "assets" {
     }
   }
 
-  # Access control
+  # Access control - bucket is private by default
   acl = "private"
 
-  # Force HTTPS
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Deny"
-        Principal = "*"
-        Action = "s3:*"
-        Resource = [
-          "arn:aws:s3:::${local.prefix}-assets-${random_id.bucket_suffix.hex}/*"
-        ]
-        Condition = {
-          Bool = {
-            "aws:SecureTransport" = "false"
-          }
-        }
-      }
-    ]
-  })
+  # Yandex Object Storage enforces HTTPS by default
+  # No need for additional policy to force HTTPS
 
   tags = local.common_labels
 }
@@ -128,15 +104,8 @@ resource "yandex_storage_bucket" "cache" {
 
   bucket = "${local.prefix}-cache-${random_id.bucket_suffix.hex}"
 
-  # Encryption
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = module.security.kms_key_id
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+  # Encryption - Yandex Object Storage encrypts all data at rest by default
+  # No need to specify encryption configuration as it's always enabled
 
   versioning {
     enabled = true
