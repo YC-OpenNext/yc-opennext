@@ -12,8 +12,9 @@ terraform {
     region = "ru-central1"
 
     # Credentials (set via environment variables)
-    # export AWS_ACCESS_KEY_ID=your_access_key
-    # export AWS_SECRET_ACCESS_KEY=your_secret_key
+    # These use AWS variable names but are for Yandex Object Storage (S3-compatible)
+    # export AWS_ACCESS_KEY_ID=your_yc_service_account_access_key
+    # export AWS_SECRET_ACCESS_KEY=your_yc_service_account_secret_key
 
     # State locking via DynamoDB-compatible YDB DocAPI (optional)
     # dynamodb_endpoint = "https://docapi.serverless.yandexcloud.net/ru-central1/xxx"
