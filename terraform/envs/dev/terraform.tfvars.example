@@ -1,0 +1,56 @@
+# Development environment configuration
+# Copy to terraform.tfvars and fill in your values
+
+# Yandex Cloud Configuration
+cloud_id  = "b1g..."  # Your YC cloud ID
+folder_id = "b1g..."  # Your YC folder ID
+region    = "ru-central1"
+
+# Application Configuration
+app_name    = "my-nextjs-app"
+env         = "dev"
+domain_name = "dev.example.com"
+
+# Build Configuration
+build_id      = "build-dev-latest"
+manifest_path = "../../build/deploy.manifest.json"
+build_dir     = "../../build"
+
+# Feature Flags
+enable_isr   = true
+enable_cdn   = false  # Usually not needed for dev
+enable_queue = false
+
+# Function Configuration
+function_memory = {
+  server = 256  # Lower for dev
+  image  = 128
+}
+
+function_timeout = {
+  server = 30
+  image  = 30
+}
+
+prepared_instances = {
+  server = 0  # No prepared instances in dev
+  image  = 0
+}
+
+# Cache Configuration
+cache_ttl_days = 1  # Shorter TTL for dev
+
+# Security
+allowed_origins = ["http://localhost:3000", "https://dev.example.com"]
+allowed_cidrs   = []  # Open for dev, restrict in prod
+
+# DNS
+create_dns_zone = true
+dns_zone_id     = ""  # Leave empty if creating new zone
+
+# Tags
+tags = {
+  environment = "development"
+  managed_by  = "terraform"
+  team        = "platform"
+}

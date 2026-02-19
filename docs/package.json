@@ -1,0 +1,13 @@
+{
+  "name": "@yc-opennext/docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "YC-OpenNext Documentation - Beautiful HTML documentation for Next.js on Yandex Cloud",
+  "scripts": {
+    "serve": "npx http-server ./public -p 3001 -o",
+    "serve:python": "cd public && python3 -m http.server 3001"
+  },
+  "keywords": ["nextjs", "yandex-cloud", "documentation", "deployment"],
+  "author": "YC-OpenNext Team",
+  "license": "MIT"
+}

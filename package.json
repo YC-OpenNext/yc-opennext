@@ -1,0 +1,40 @@
+{
+  "name": "yc-opennext-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vercel-like Next.js deployment for Yandex Cloud",
+  "license": "MIT",
+  "author": "YC-OpenNext Contributors",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fixture:test": "pnpm -r --filter './fixtures/*' test:build",
+    "terraform:validate": "cd terraform && terraform fmt -check -recursive && terraform -chdir=modules/nextjs_yc validate",
+    "ci": "pnpm lint && pnpm test && pnpm build && pnpm terraform:validate",
+    "dev": "pnpm -r --parallel dev",
+    "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf node_modules",
+    "cli": "node packages/yc-opennext/dist/index.js",
+    "cli:dev": "tsx packages/yc-opennext/src/index.ts",
+    "setup": "pnpm install && pnpm build",
+    "docs": "cd docs && pnpm serve",
+    "docs:install": "cd docs && pnpm install",
+    "docs:simple": "cd docs && npx http-server ./public -p 3001 -o"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

@@ -1,0 +1,35 @@
+# Backend configuration for Terraform state
+# Copy to backend.tf and configure for your environment
+
+terraform {
+  backend "s3" {
+    # YC Object Storage configuration
+    endpoint = "storage.yandexcloud.net"
+
+    # Bucket for Terraform state (must be created manually)
+    bucket = "my-terraform-state-bucket"
+    key    = "yc-opennext/terraform.tfstate"
+    region = "ru-central1"
+
+    # Credentials (set via environment variables)
+    # export AWS_ACCESS_KEY_ID=your_access_key
+    # export AWS_SECRET_ACCESS_KEY=your_secret_key
+
+    # State locking via DynamoDB-compatible YDB DocAPI (optional)
+    # dynamodb_endpoint = "https://docapi.serverless.yandexcloud.net/ru-central1/xxx"
+    # dynamodb_table    = "terraform-locks"
+
+    # Encryption
+    encrypt = true
+
+    # Workspace prefix
+    workspace_key_prefix = "workspaces"
+  }
+}
+
+# Alternative: Local backend for development
+# terraform {
+#   backend "local" {
+#     path = "./terraform.tfstate"
+#   }
+# }

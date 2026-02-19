@@ -1,0 +1,58 @@
+# Production environment configuration
+# Copy to terraform.tfvars and fill in your values
+
+# Yandex Cloud Configuration
+cloud_id  = "b1g..."  # Your YC cloud ID
+folder_id = "b1g..."  # Your YC folder ID
+region    = "ru-central1"
+
+# Application Configuration
+app_name    = "my-nextjs-app"
+env         = "production"
+domain_name = "app.example.com"
+
+# Build Configuration
+build_id      = "build-v1.0.0"
+manifest_path = "../../build/deploy.manifest.json"
+build_dir     = "../../build"
+
+# Feature Flags
+enable_isr   = true
+enable_cdn   = true  # Recommended for production
+enable_queue = true  # For async revalidation
+
+# Function Configuration
+function_memory = {
+  server = 1024  # Higher for production
+  image  = 512
+}
+
+function_timeout = {
+  server = 60  # Longer timeout for production
+  image  = 30
+}
+
+prepared_instances = {
+  server = 2  # Keep warm instances
+  image  = 1
+}
+
+# Cache Configuration
+cache_ttl_days = 30
+
+# Security
+allowed_origins = ["https://app.example.com", "https://www.example.com"]
+allowed_cidrs   = ["10.0.0.0/8"]  # Restrict revalidation endpoint
+
+# DNS
+create_dns_zone = false  # Use existing zone
+dns_zone_id     = "dns..."  # Existing zone ID
+
+# Tags
+tags = {
+  environment  = "production"
+  managed_by   = "terraform"
+  team         = "platform"
+  cost_center  = "engineering"
+  sla          = "99.9"
+}
