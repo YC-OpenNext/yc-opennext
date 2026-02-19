@@ -220,7 +220,7 @@ resource "yandex_function" "server" {
   description        = "Next.js SSR and API handler"
   user_hash          = var.build_id
   runtime            = "nodejs18"
-  entrypoint        = local.manifest.artifacts.server.entry
+  entrypoint         = local.manifest.artifacts.server.entry
   memory             = local.manifest.deployment.functions.server.memory
   execution_timeout  = local.manifest.deployment.functions.server.timeout
   service_account_id = yandex_iam_service_account.functions.id
@@ -265,7 +265,7 @@ resource "yandex_function" "image" {
   description        = "Next.js image optimization handler"
   user_hash          = var.build_id
   runtime            = "nodejs18"
-  entrypoint        = local.manifest.artifacts.image.entry
+  entrypoint         = local.manifest.artifacts.image.entry
   memory             = local.manifest.deployment.functions.image.memory
   execution_timeout  = local.manifest.deployment.functions.image.timeout
   service_account_id = yandex_iam_service_account.functions.id
@@ -294,16 +294,16 @@ resource "yandex_function" "image" {
 # Generate OpenAPI spec from template
 locals {
   openapi_spec = templatefile("${path.module}/templates/openapi.yaml.tpl", {
-    api_name             = "${local.prefix}-api"
-    assets_bucket        = yandex_storage_bucket.assets.bucket
-    build_id             = var.build_id
-    server_function_id   = local.manifest.capabilities.needsServer ? yandex_function.server[0].id : ""
-    server_version_id    = local.manifest.capabilities.needsServer ? yandex_function.server[0].version : ""
-    image_function_id    = local.manifest.capabilities.needsImage ? yandex_function.image[0].id : ""
-    image_version_id     = local.manifest.capabilities.needsImage ? yandex_function.image[0].version : ""
-    service_account_id   = yandex_iam_service_account.functions.id
-    has_server          = local.manifest.capabilities.needsServer
-    has_image           = local.manifest.capabilities.needsImage
+    api_name           = "${local.prefix}-api"
+    assets_bucket      = yandex_storage_bucket.assets.bucket
+    build_id           = var.build_id
+    server_function_id = local.manifest.capabilities.needsServer ? yandex_function.server[0].id : ""
+    server_version_id  = local.manifest.capabilities.needsServer ? yandex_function.server[0].version : ""
+    image_function_id  = local.manifest.capabilities.needsImage ? yandex_function.image[0].id : ""
+    image_version_id   = local.manifest.capabilities.needsImage ? yandex_function.image[0].version : ""
+    service_account_id = yandex_iam_service_account.functions.id
+    has_server         = local.manifest.capabilities.needsServer
+    has_image          = local.manifest.capabilities.needsImage
   })
 }
 
