@@ -4,6 +4,15 @@
   "description": "Runtime adapters for Next.js on Yandex Cloud Functions",
   "license": "MIT",
   "author": "YC-OpenNext Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yc-opennext/yc-opennext.git",
+    "directory": "packages/yc-runtime"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "files": [

@@ -16,9 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
+          run_install: false
 
       - uses: actions/setup-node@v4
         with:
@@ -26,7 +27,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Lint code
         run: pnpm lint
@@ -40,9 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
+          run_install: false
 
       - uses: actions/setup-node@v4
         with:
@@ -50,16 +52,10 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run tests
         run: pnpm test
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        if: always()
-        with:
-          files: ./packages/*/coverage/lcov.info
 
   build:
     name: Build
@@ -67,9 +63,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
+          run_install: false
 
       - uses: actions/setup-node@v4
         with:
@@ -77,13 +74,13 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build packages
         run: pnpm build
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
@@ -99,9 +96,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
+          run_install: false
 
       - uses: actions/setup-node@v4
         with:
@@ -109,7 +107,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build CLI
         run: pnpm --filter @yc-opennext/cli build
@@ -175,6 +173,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     needs: [lint, test, build, test-fixtures, terraform, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
@@ -182,25 +183,66 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
+          run_install: false
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://npm.pkg.github.com'
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build packages
         run: pnpm build
 
-      - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Configure npm for GitHub Packages
         run: |
-          # Semantic release or changesets would go here
-          echo "Release process would run here"
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          echo "@yc-opennext:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the current version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+
+          # Publish CLI package
+          cd packages/yc-opennext
+          npm version $VERSION --no-git-tag-version --allow-same-version
+          npm publish --access public
+          cd ../..
+
+          # Publish Runtime package
+          cd packages/yc-runtime
+          npm version $VERSION --no-git-tag-version --allow-same-version
+          npm publish --access public
+          cd ../..
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            ## 🚀 Release v${{ github.run_number }}
+
+            ### Packages Published to GitHub Packages
+            - `@yc-opennext/cli`
+            - `@yc-opennext/runtime`
+
+            ### Installation
+            ```bash
+            npm install @yc-opennext/cli@latest
+            npm install @yc-opennext/runtime@latest
+            ```
+
+            ### Changes
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false

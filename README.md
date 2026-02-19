@@ -53,7 +53,20 @@ output "api_gateway_domain" {
 }
 ```
 
-### 2. Prepare Your Next.js App
+### 2. Install from GitHub Packages (Optional)
+
+For the latest development version:
+
+```bash
+# Configure npm to use GitHub Packages for @yc-opennext scope
+npm config set @yc-opennext:registry https://npm.pkg.github.com
+
+# Install packages
+npm install @yc-opennext/cli
+npm install @yc-opennext/runtime
+```
+
+### 3. Prepare Your Next.js App
 
 Configure `next.config.js`:
 
@@ -68,7 +81,7 @@ module.exports = {
 }
 ```
 
-### 3. Build and Deploy
+### 4. Build and Deploy
 
 ```bash
 # Build your Next.js app

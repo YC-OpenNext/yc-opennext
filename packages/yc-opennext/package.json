@@ -4,6 +4,15 @@
   "description": "CLI tool for building and deploying Next.js apps to Yandex Cloud",
   "license": "MIT",
   "author": "YC-OpenNext Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yc-opennext/yc-opennext.git",
+    "directory": "packages/yc-opennext"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
