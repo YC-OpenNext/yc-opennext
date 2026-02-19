@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
 import { Analyzer } from './analyze/index.js';
-import { Builder } from './build/index';
+import { Builder } from './build/index.js';
 import { Uploader } from './upload/index.js';
 import { ManifestGenerator } from './manifest/index.js';
 
