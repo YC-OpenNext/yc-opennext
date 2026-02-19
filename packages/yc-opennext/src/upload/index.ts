@@ -18,7 +18,7 @@ export interface UploadOptions {
 }
 
 export class Uploader {
-  private s3Client: S3Client;
+  private s3Client!: S3Client;
 
   /**
    * Upload build artifacts to YC Object Storage
@@ -185,7 +185,6 @@ export class Uploader {
     key: string
   ): Promise<void> {
     const fileStream = fs.createReadStream(localPath);
-    const stats = await fs.stat(localPath);
 
     // Determine content type from file extension
     const ext = path.extname(localPath).toLowerCase();
@@ -236,7 +235,7 @@ export class Uploader {
       partSize: 5 * 1024 * 1024, // 5MB parts
     });
 
-    upload.on('httpUploadProgress', (progress) => {
+    upload.on('httpUploadProgress', (_progress) => {
       // Progress tracking if needed
     });
 

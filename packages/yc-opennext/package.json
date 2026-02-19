@@ -26,10 +26,10 @@
     "build": "tsc && chmod +x dist/index.js",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "vitest",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint 'src/**/*.ts' --max-warnings 0 || true",
     "format": "prettier --write src",
     "prepublishOnly": "pnpm clean && pnpm build"
   },

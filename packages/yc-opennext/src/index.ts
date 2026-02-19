@@ -4,10 +4,9 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
 import { Analyzer } from './analyze/index.js';
-import { Builder } from './build/index.js';
+import { Builder } from './build/index';
 import { Uploader } from './upload/index.js';
 import { ManifestGenerator } from './manifest/index.js';
-import fs from 'fs-extra';
 
 const program = new Command();
 
@@ -36,7 +35,7 @@ program
 
       console.log(chalk.green('✅ Analysis complete'));
     } catch (error) {
-      console.error(chalk.red('❌ Analysis failed:'), error.message);
+      console.error(chalk.red('❌ Analysis failed:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -70,7 +69,7 @@ program
       console.log(chalk.cyan('📦 Artifacts:'), outputDir);
       console.log(chalk.cyan('🆔 Build ID:'), manifest.buildId);
     } catch (error) {
-      console.error(chalk.red('❌ Build failed:'), error.message);
+      console.error(chalk.red('❌ Build failed:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -97,7 +96,7 @@ program
       console.log(chalk.green('✅ Manifest generated'));
       console.log(chalk.cyan('📋 Manifest:'), outputPath);
     } catch (error) {
-      console.error(chalk.red('❌ Manifest generation failed:'), error.message);
+      console.error(chalk.red('❌ Manifest generation failed:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -136,7 +135,7 @@ program
         console.log(chalk.cyan('📁 Prefix:'), options.prefix);
       }
     } catch (error) {
-      console.error(chalk.red('❌ Upload failed:'), error.message);
+      console.error(chalk.red('❌ Upload failed:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -198,7 +197,7 @@ program
       console.log(chalk.gray('\n─'.repeat(50)));
       console.log(chalk.green('✅ Plan complete. Run "yc-opennext build" to proceed.'));
     } catch (error) {
-      console.error(chalk.red('❌ Planning failed:'), error.message);
+      console.error(chalk.red('❌ Planning failed:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });

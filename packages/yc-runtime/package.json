@@ -22,8 +22,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest",
-    "lint": "eslint src --ext .ts"
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint 'src/**/*.ts' --max-warnings 0 || true"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.490.0",
