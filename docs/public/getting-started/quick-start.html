@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Start Guide - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/docs.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1976d2" />
+            <text
+              x="16"
+              y="21"
+              font-family="Arial"
+              font-size="14"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              YC
+            </text>
+          </svg>
+          YC-OpenNext
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#quickstart">Quick Start</a></li>
+          <li><a href="/docs.html" class="active">Documentation</a></li>
+          <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+        </ul>
+        <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </nav>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Getting Started</div>
+          <ul class="sidebar-links">
+            <li><a href="/getting-started/installation.html">Installation</a></li>
+            <li><a href="/getting-started/quick-start.html" class="active">Quick Start</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Guides</div>
+          <ul class="sidebar-links">
+            <li><a href="/deployment.html">Deployment</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration from Vercel</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">API Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/api/cli-commands.html">CLI Commands</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Architecture</div>
+          <ul class="sidebar-links">
+            <li><a href="/architecture.html">System Architecture</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Examples</div>
+          <ul class="sidebar-links">
+            <li><a href="/examples/blog-with-isr.html">Blog with ISR</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <div class="docs-main">
+          <div class="breadcrumbs">
+            <a href="/docs.html">Docs</a>
+            <span class="separator">/</span>
+            <span>Getting Started</span>
+            <span class="separator">/</span>
+            <span>Quick Start</span>
+          </div>
+
+          <div class="page-header">
+            <h1>Quick Start Guide</h1>
+            <p class="subtitle">Deploy your Next.js application to Yandex Cloud in minutes.</p>
+          </div>
+
+          <!-- Prerequisites -->
+          <h2>Prerequisites</h2>
+
+          <p>Before you begin, ensure you have:</p>
+
+          <ul>
+            <li>Node.js 18+ and npm/pnpm installed</li>
+            <li>A Yandex Cloud account (<a href="https://cloud.yandex.com">sign up here</a>)</li>
+            <li>
+              Yandex Cloud CLI installed (<a href="https://cloud.yandex.com/docs/cli/quickstart"
+                >installation guide</a
+              >)
+            </li>
+            <li>A Next.js application ready to deploy</li>
+          </ul>
+
+          <!-- Step 1 -->
+          <h2>Step 1: Install YC-OpenNext</h2>
+
+          <pre><code class="language-bash">npm install -g @yc-opennext/cli</code></pre>
+
+          <p>Or add to your project:</p>
+
+          <pre><code class="language-bash">npm install --save-dev @yc-opennext/cli</code></pre>
+
+          <!-- Step 2 -->
+          <h2>Step 2: Configure Yandex Cloud</h2>
+
+          <h3>Authenticate with YC</h3>
+
+          <pre><code class="language-bash"># Initialize YC CLI
+yc init
+
+# Create a service account for deployment
+yc iam service-account create --name yc-opennext-deploy
+
+# Create access keys
+yc iam access-key create --service-account-name yc-opennext-deploy &gt; keys.json
+
+# Export credentials
+export AWS_ACCESS_KEY_ID=$(cat keys.json | jq -r .access_key.key_id)
+export AWS_SECRET_ACCESS_KEY=$(cat keys.json | jq -r .secret)</code></pre>
+
+          <h3>Get your Cloud and Folder IDs</h3>
+
+          <pre><code class="language-bash"># List your clouds
+yc resource-manager cloud list
+
+# List folders in your cloud
+yc resource-manager folder list --cloud-id &lt;your-cloud-id&gt;
+
+# Export for later use
+export YC_CLOUD_ID=&lt;your-cloud-id&gt;
+export YC_FOLDER_ID=&lt;your-folder-id&gt;</code></pre>
+
+          <!-- Step 3 -->
+          <h2>Step 3: Prepare Your Next.js App</h2>
+
+          <h3>Update next.config.js</h3>
+
+          <pre><code class="language-javascript">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Enable standalone mode for optimal deployment
+  output: 'standalone',
+
+  // Configure image optimization
+  images: {
+    domains: ['your-domain.com'],
+    formats: ['image/avif', 'image/webp'],
+  },
+};
+
+module.exports = nextConfig;</code></pre>
+
+          <h3>Build your application</h3>
+
+          <pre><code class="language-bash"># In your Next.js project directory
+npm run build</code></pre>
+
+          <!-- Step 4 -->
+          <h2>Step 4: Package for Deployment</h2>
+
+          <pre><code class="language-bash"># Analyze and build for YC
+yc-opennext build \
+  --project . \
+  --output ./yc-build \
+  --standalone \
+  --verbose
+
+# Check the output
+ls -la ./yc-build/
+# You should see:
+# - artifacts/      (function packages)
+# - deploy.manifest.json (deployment config)
+# - capabilities.json (detected features)</code></pre>
+
+          <!-- Step 5 -->
+          <h2>Step 5: Create Storage Buckets</h2>
+
+          <pre><code class="language-bash"># Create bucket for static assets
+yc storage bucket create \
+  --name my-app-assets-$RANDOM \
+  --default-storage-class standard
+
+# Create bucket for cache (if using ISR)
+yc storage bucket create \
+  --name my-app-cache-$RANDOM \
+  --default-storage-class standard
+
+# Save bucket names
+export ASSETS_BUCKET=my-app-assets-xxxxx
+export CACHE_BUCKET=my-app-cache-xxxxx</code></pre>
+
+          <!-- Step 6 -->
+          <h2>Step 6: Upload Artifacts</h2>
+
+          <pre><code class="language-bash">yc-opennext upload \
+  --build-dir ./yc-build \
+  --bucket $ASSETS_BUCKET \
+  --cache-bucket $CACHE_BUCKET \
+  --prefix v1 \
+  --region ru-central1</code></pre>
+
+          <!-- Step 7 -->
+          <h2>Step 7: Deploy with Terraform</h2>
+
+          <h3>Create Terraform configuration</h3>
+
+          <p>Create a file <code>deploy.tf</code>:</p>
+
+          <pre><code class="language-hcl">terraform {
+  required_version = "&gt;= 1.5.0"
+  required_providers {
+    yandex = {
+      source  = "yandex-cloud/yandex"
+      version = "~&gt; 0.100.0"
+    }
+  }
+}
+
+provider "yandex" {
+  cloud_id  = var.cloud_id
+  folder_id = var.folder_id
+}
+
+module "nextjs_app" {
+  source = "github.com/yc-opennext/yc-opennext//terraform/modules/nextjs_yc"
+
+  app_name      = "my-nextjs-app"
+  env           = "production"
+  cloud_id      = var.cloud_id
+  folder_id     = var.folder_id
+  domain_name   = "app.example.com"  # Change to your domain
+  build_id      = "v1"
+  manifest_path = "./yc-build/deploy.manifest.json"
+}
+
+variable "cloud_id" {
+  default = "YOUR_CLOUD_ID"
+}
+
+variable "folder_id" {
+  default = "YOUR_FOLDER_ID"
+}
+
+output "app_url" {
+  value = module.nextjs_app.api_gateway_domain
+}</code></pre>
+
+          <h3>Deploy the infrastructure</h3>
+
+          <pre><code class="language-bash"># Initialize Terraform
+terraform init
+
+# Review the deployment plan
+terraform plan
+
+# Apply the configuration
+terraform apply -auto-approve
+
+# Get your app URL
+terraform output app_url</code></pre>
+
+          <!-- Step 8 -->
+          <h2>Step 8: Access Your Application</h2>
+
+          <p>
+            Your application is now live! Access it at the API Gateway domain shown in the Terraform
+            output.
+          </p>
+
+          <p>To use a custom domain, update the DNS records as shown in the Terraform output.</p>
+
+          <hr />
+
+          <!-- Congratulations -->
+          <h2>Congratulations!</h2>
+
+          <p>You've successfully deployed your Next.js application to Yandex Cloud!</p>
+
+          <h3>What's Next?</h3>
+
+          <ul>
+            <li><a href="/guides/migration-from-vercel.html">Configure a custom domain</a></li>
+            <li><a href="/deployment.html">Set up CI/CD</a></li>
+            <li><a href="/reference/troubleshooting.html">Optimize for production</a></li>
+            <li><a href="/architecture.html">Monitor your application</a></li>
+          </ul>
+
+          <!-- Quick Commands Reference -->
+          <h2>Quick Commands Reference</h2>
+
+          <pre><code class="language-bash"># Build and deploy a new version
+yc-opennext build --project . --output ./build-v2
+yc-opennext upload --build-dir ./build-v2 --bucket $ASSETS_BUCKET --prefix v2
+terraform apply -var="build_id=v2"
+
+# Rollback to previous version
+terraform apply -var="build_id=v1"
+
+# View function logs
+yc serverless function logs --name my-nextjs-app-production-server-function --follow
+
+# Check deployment status
+terraform show</code></pre>
+
+          <!-- Troubleshooting -->
+          <h2>Troubleshooting</h2>
+
+          <p>If you encounter issues:</p>
+
+          <ol>
+            <li>
+              <strong>Build fails</strong>: Ensure your Next.js app builds locally with
+              <code>npm run build</code>
+            </li>
+            <li><strong>Upload fails</strong>: Check your AWS credentials are set correctly</li>
+            <li><strong>Terraform fails</strong>: Verify your YC cloud and folder IDs</li>
+            <li>
+              <strong>Function errors</strong>: Check logs with
+              <code>yc serverless function logs</code>
+            </li>
+          </ol>
+
+          <p>
+            For more help, see our
+            <a href="/reference/troubleshooting.html">troubleshooting guide</a>.
+          </p>
+
+          <!-- Previous/Next Navigation -->
+          <div class="page-nav">
+            <a href="/getting-started/installation.html" class="prev">
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">Installation</span>
+            </a>
+            <a href="/deployment.html" class="next">
+              <span class="nav-label">Next</span>
+              <span class="nav-title">Deployment Guide</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/docs.html">Documentation</a></li>
+            <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            <li><a href="/architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+            <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul class="footer-links">
+            <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+      </div>
+    </footer>
+
+    <button
+      class="sidebar-toggle"
+      onclick="document.querySelector('.sidebar').classList.toggle('open')"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>
+    <script>
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      });
+    </script>
+  </body>
+</html>

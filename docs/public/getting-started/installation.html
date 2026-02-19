@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation Guide - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/docs.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1976d2" />
+            <text
+              x="16"
+              y="21"
+              font-family="Arial"
+              font-size="14"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              YC
+            </text>
+          </svg>
+          YC-OpenNext
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#quickstart">Quick Start</a></li>
+          <li><a href="/docs.html" class="active">Documentation</a></li>
+          <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+        </ul>
+        <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </nav>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Getting Started</div>
+          <ul class="sidebar-links">
+            <li><a href="/getting-started/installation.html" class="active">Installation</a></li>
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Guides</div>
+          <ul class="sidebar-links">
+            <li><a href="/deployment.html">Deployment</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration from Vercel</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">API Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/api/cli-commands.html">CLI Commands</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Architecture</div>
+          <ul class="sidebar-links">
+            <li><a href="/architecture.html">System Architecture</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Examples</div>
+          <ul class="sidebar-links">
+            <li><a href="/examples/blog-with-isr.html">Blog with ISR</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <div class="docs-main">
+          <div class="breadcrumbs">
+            <a href="/docs.html">Docs</a>
+            <span class="separator">/</span>
+            <span>Getting Started</span>
+            <span class="separator">/</span>
+            <span>Installation</span>
+          </div>
+
+          <div class="page-header">
+            <h1>Installation Guide</h1>
+            <p class="subtitle">
+              Complete setup instructions for YC-OpenNext and all required dependencies.
+            </p>
+          </div>
+
+          <!-- System Requirements -->
+          <h2>System Requirements</h2>
+
+          <h3>Minimum Requirements</h3>
+
+          <ul>
+            <li><strong>Operating System</strong>: Linux, macOS, or Windows (with WSL2)</li>
+            <li><strong>Node.js</strong>: Version 18.0.0 or higher</li>
+            <li><strong>Package Manager</strong>: npm, yarn, or pnpm</li>
+            <li><strong>Terraform</strong>: Version 1.5.0 or higher</li>
+            <li><strong>Disk Space</strong>: At least 2GB free space</li>
+            <li><strong>Memory</strong>: Minimum 4GB RAM</li>
+          </ul>
+
+          <h3>Recommended Setup</h3>
+
+          <ul>
+            <li><strong>Node.js</strong>: Version 20 LTS</li>
+            <li><strong>Package Manager</strong>: pnpm (for better monorepo support)</li>
+            <li><strong>OS</strong>: Ubuntu 22.04 or macOS 13+</li>
+            <li><strong>Memory</strong>: 8GB+ RAM for large applications</li>
+          </ul>
+
+          <!-- Installing Prerequisites -->
+          <h2>Installing Prerequisites</h2>
+
+          <h3>Node.js Installation</h3>
+
+          <h4>Using Node Version Manager (Recommended)</h4>
+
+          <pre><code class="language-bash"># Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Reload shell configuration
+source ~/.bashrc
+
+# Install Node.js 20
+nvm install 20
+nvm use 20
+
+# Verify installation
+node --version  # Should show v20.x.x
+npm --version</code></pre>
+
+          <h4>Using Package Managers</h4>
+
+          <p><strong>macOS (Homebrew):</strong></p>
+
+          <pre><code class="language-bash">brew install node@20</code></pre>
+
+          <p><strong>Ubuntu/Debian:</strong></p>
+
+          <pre><code class="language-bash">curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs</code></pre>
+
+          <p>
+            <strong>Windows:</strong> Download from <a href="https://nodejs.org">nodejs.org</a> or
+            use <a href="https://chocolatey.org">Chocolatey</a>:
+          </p>
+
+          <pre><code class="language-powershell">choco install nodejs</code></pre>
+
+          <h3>Terraform Installation</h3>
+
+          <h4>Official Installation</h4>
+
+          <pre><code class="language-bash"># macOS
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+
+# Linux
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update &amp;&amp; sudo apt install terraform
+
+# Verify installation
+terraform version  # Should show v1.5.x or higher</code></pre>
+
+          <h3>Yandex Cloud CLI</h3>
+
+          <pre><code class="language-bash"># macOS/Linux
+curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+
+# Restart your shell or run
+source ~/.bashrc
+
+# Verify installation
+yc version</code></pre>
+
+          <!-- Installing YC-OpenNext -->
+          <h2>Installing YC-OpenNext</h2>
+
+          <h3>Global Installation (Recommended)</h3>
+
+          <pre><code class="language-bash"># Using npm
+npm install -g @yc-opennext/cli
+
+# Using yarn
+yarn global add @yc-opennext/cli
+
+# Using pnpm
+pnpm add -g @yc-opennext/cli
+
+# Verify installation
+yc-opennext --version</code></pre>
+
+          <h3>Project-Level Installation</h3>
+
+          <pre><code class="language-bash"># Add to your Next.js project
+cd your-nextjs-project
+
+# Using npm
+npm install --save-dev @yc-opennext/cli
+
+# Using yarn
+yarn add -D @yc-opennext/cli
+
+# Using pnpm
+pnpm add -D @yc-opennext/cli</code></pre>
+
+          <p>Add to your <code>package.json</code> scripts:</p>
+
+          <pre><code class="language-json">{
+  "scripts": {
+    "yc:build": "yc-opennext build --project . --output ./yc-build",
+    "yc:deploy": "yc-opennext upload --build-dir ./yc-build --bucket $BUCKET"
+  }
+}</code></pre>
+
+          <!-- Configuring Yandex Cloud -->
+          <h2>Configuring Yandex Cloud</h2>
+
+          <h3>1. Create YC Account</h3>
+
+          <ol>
+            <li>Go to <a href="https://cloud.yandex.com">cloud.yandex.com</a></li>
+            <li>Sign up with your email</li>
+            <li>Create your first cloud</li>
+            <li>Note your cloud ID and folder ID</li>
+          </ol>
+
+          <h3>2. Initialize YC CLI</h3>
+
+          <pre><code class="language-bash"># Start interactive setup
+yc init
+
+# You'll be prompted for:
+# 1. OAuth token (or use service account)
+# 2. Cloud selection
+# 3. Default folder
+# 4. Default availability zone</code></pre>
+
+          <h3>3. Create Service Account</h3>
+
+          <pre><code class="language-bash"># Create service account
+yc iam service-account create \
+  --name yc-opennext-sa \
+  --description "Service account for YC-OpenNext deployments"
+
+# Assign roles
+yc resource-manager folder add-access-binding \
+  --id &lt;folder-id&gt; \
+  --role editor \
+  --service-account-name yc-opennext-sa
+
+# Create static access key
+yc iam access-key create \
+  --service-account-name yc-opennext-sa \
+  --format json &gt; sa-key.json
+
+# Export credentials
+export AWS_ACCESS_KEY_ID=$(cat sa-key.json | jq -r .access_key.key_id)
+export AWS_SECRET_ACCESS_KEY=$(cat sa-key.json | jq -r .secret)</code></pre>
+
+          <h3>4. Set Environment Variables</h3>
+
+          <p>Create a <code>.env</code> file for your project:</p>
+
+          <pre><code class="language-bash"># Yandex Cloud Configuration
+YC_CLOUD_ID=b1g8...
+YC_FOLDER_ID=b1g9...
+YC_REGION=ru-central1
+
+# Storage Configuration
+AWS_ACCESS_KEY_ID=YCAJE...
+AWS_SECRET_ACCESS_KEY=YCM...
+S3_ENDPOINT=https://storage.yandexcloud.net
+
+# Optional: YDB Configuration
+YDB_ENDPOINT=grpcs://ydb.serverless.yandexcloud.net:2135
+YDB_DATABASE=/ru-central1/b1g.../etn...</code></pre>
+
+          <!-- Setting Up Development Environment -->
+          <h2>Setting Up Development Environment</h2>
+
+          <h3>VS Code Extensions</h3>
+
+          <p>Install recommended extensions for better development experience:</p>
+
+          <pre><code class="language-json">{
+  "recommendations": [
+    "hashicorp.terraform",
+    "ms-vscode.vscode-typescript-next",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "redhat.vscode-yaml"
+  ]
+}</code></pre>
+
+          <h3>Git Configuration</h3>
+
+          <pre><code class="language-bash"># Clone the repository
+git clone https://github.com/yc-opennext/yc-opennext.git
+cd yc-opennext
+
+# Install dependencies
+pnpm install
+
+# Build all packages
+pnpm build
+
+# Run tests
+pnpm test</code></pre>
+
+          <!-- Verifying Installation -->
+          <h2>Verifying Installation</h2>
+
+          <h3>Check All Components</h3>
+
+          <pre><code class="language-bash"># Create a test script: check-setup.sh
+#!/bin/bash
+
+echo "Checking YC-OpenNext setup..."
+
+# Check Node.js
+echo -n "Node.js: "
+node --version || echo "Not installed"
+
+# Check npm/pnpm
+echo -n "Package Manager: "
+pnpm --version 2&gt;/dev/null || npm --version || echo "Not installed"
+
+# Check Terraform
+echo -n "Terraform: "
+terraform version -json 2&gt;/dev/null | jq -r .terraform_version || echo "Not installed"
+
+# Check YC CLI
+echo -n "YC CLI: "
+yc version --format json | jq -r .version || echo "Not installed"
+
+# Check YC-OpenNext
+echo -n "YC-OpenNext: "
+yc-opennext --version || echo "Not installed"
+
+# Check YC authentication
+echo -n "YC Auth: "
+yc config list --format json | jq -r .token &gt; /dev/null &amp;&amp; echo "Configured" || echo "Not configured"
+
+# Check environment variables
+echo -n "AWS Credentials: "
+[[ -n "$AWS_ACCESS_KEY_ID" ]] &amp;&amp; echo "Set" || echo "Not set"
+
+echo "Setup check complete!"</code></pre>
+
+          <p>Run the verification:</p>
+
+          <pre><code class="language-bash">chmod +x check-setup.sh
+./check-setup.sh</code></pre>
+
+          <h3>Test Deployment</h3>
+
+          <p>Create a minimal Next.js app to test:</p>
+
+          <pre><code class="language-bash"># Create test app
+npx create-next-app@latest test-app --typescript --app --no-tailwind
+
+cd test-app
+
+# Build with YC-OpenNext
+yc-opennext analyze --project .
+yc-opennext build --project . --output ./yc-build
+
+# If successful, you're ready to deploy!</code></pre>
+
+          <!-- Platform-Specific Notes -->
+          <h2>Platform-Specific Notes</h2>
+
+          <h3>macOS</h3>
+
+          <ul>
+            <li>Install Xcode Command Line Tools: <code>xcode-select --install</code></li>
+            <li>Use Homebrew for package management</li>
+            <li>May need to allow unsigned binaries in Security settings</li>
+          </ul>
+
+          <h3>Linux</h3>
+
+          <ul>
+            <li>Ensure you have <code>build-essential</code> installed</li>
+            <li>
+              May need to install additional libraries for sharp:
+              <code>sudo apt-get install libvips-dev</code>
+            </li>
+          </ul>
+
+          <h3>Windows</h3>
+
+          <ul>
+            <li>Use WSL2 for best compatibility</li>
+            <li>Install Ubuntu from Microsoft Store</li>
+            <li>Follow Linux instructions within WSL2</li>
+          </ul>
+
+          <h3>Docker Alternative</h3>
+
+          <p>For consistent environment across platforms:</p>
+
+          <pre><code class="language-docker">FROM node:20-slim
+
+# Install required tools
+RUN apt-get update &amp;&amp; apt-get install -y \
+    curl \
+    git \
+    jq \
+    wget \
+    gnupg \
+    software-properties-common
+
+# Install Terraform
+RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    &amp;&amp; echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com focal main" | tee /etc/apt/sources.list.d/hashicorp.list \
+    &amp;&amp; apt-get update &amp;&amp; apt-get install -y terraform
+
+# Install YC CLI
+RUN curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+
+# Install YC-OpenNext
+RUN npm install -g @yc-opennext/cli
+
+WORKDIR /app</code></pre>
+
+          <!-- Next Steps -->
+          <h2>Next Steps</h2>
+
+          <p>Now that you have YC-OpenNext installed:</p>
+
+          <ol>
+            <li><a href="/getting-started/quick-start.html">Deploy your first application</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Configure your Next.js app</a></li>
+            <li><a href="/deployment.html">Set up CI/CD</a></li>
+          </ol>
+
+          <!-- Getting Help -->
+          <h2>Getting Help</h2>
+
+          <p>If you encounter installation issues:</p>
+
+          <ul>
+            <li>Check our <a href="/reference/troubleshooting.html">Troubleshooting Guide</a></li>
+            <li>
+              Search
+              <a href="https://github.com/yc-opennext/yc-opennext/issues" target="_blank"
+                >GitHub Issues</a
+              >
+            </li>
+            <li>
+              Join our
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Community Discussion</a
+              >
+            </li>
+          </ul>
+
+          <!-- Previous/Next Navigation -->
+          <div class="page-nav">
+            <a href="/getting-started/quick-start.html" class="next">
+              <span class="nav-label">Next</span>
+              <span class="nav-title">Quick Start</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/docs.html">Documentation</a></li>
+            <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            <li><a href="/architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+            <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul class="footer-links">
+            <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+      </div>
+    </footer>
+
+    <button
+      class="sidebar-toggle"
+      onclick="document.querySelector('.sidebar').classList.toggle('open')"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>
+    <script>
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      });
+    </script>
+  </body>
+</html>

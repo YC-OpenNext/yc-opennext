@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example: Blog with ISR - YC-OpenNext Docs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/docs.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1976d2" />
+            <text
+              x="16"
+              y="21"
+              font-family="Arial"
+              font-size="14"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              YC
+            </text>
+          </svg>
+          YC-OpenNext
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#quickstart">Quick Start</a></li>
+          <li><a href="/docs.html" class="active">Documentation</a></li>
+          <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+        </ul>
+        <a href="https://github.com/yc-opennext/yc-opennext" class="github-btn" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </nav>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Getting Started</div>
+          <ul class="sidebar-links">
+            <li><a href="/getting-started/installation.html">Installation</a></li>
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Guides</div>
+          <ul class="sidebar-links">
+            <li><a href="/deployment.html">Deployment</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration from Vercel</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">API Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/api/cli-commands.html">CLI Commands</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Architecture</div>
+          <ul class="sidebar-links">
+            <li><a href="/architecture.html">System Architecture</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Examples</div>
+          <ul class="sidebar-links">
+            <li><a href="/examples/blog-with-isr.html" class="active">Blog with ISR</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Reference</div>
+          <ul class="sidebar-links">
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <div class="docs-main">
+          <div class="breadcrumbs">
+            <a href="/docs.html">Docs</a>
+            <span class="separator">/</span>
+            <span>Examples</span>
+            <span class="separator">/</span>
+            <span>Blog with ISR</span>
+          </div>
+
+          <div class="page-header">
+            <h1>Example: Blog with ISR</h1>
+            <p class="subtitle">
+              Build a performant blog with Incremental Static Regeneration on Yandex Cloud.
+            </p>
+          </div>
+
+          <h2>Overview</h2>
+
+          <p>This example demonstrates:</p>
+
+          <ul>
+            <li>Static generation with ISR</li>
+            <li>On-demand revalidation</li>
+            <li>Tag-based cache invalidation</li>
+            <li>Markdown content with MDX</li>
+            <li>Image optimization</li>
+            <li>SEO optimization</li>
+          </ul>
+
+          <h2>Project Structure</h2>
+
+          <pre><code class="language-bash">my-blog/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── blog/
+│   │   ├── page.tsx           # Blog listing
+│   │   └── [slug]/
+│   │       └── page.tsx       # Blog post
+│   └── api/
+│       └── revalidate/
+│           └── route.ts       # Revalidation endpoint
+├── lib/
+│   ├── blog.ts               # Blog utilities
+│   └── cache.ts              # Cache helpers
+├── content/
+│   └── posts/                # Markdown posts
+│       ├── first-post.mdx
+│       └── second-post.mdx
+└── next.config.js</code></pre>
+
+          <h2>Step 1: Set Up the Blog</h2>
+
+          <h3>Install Dependencies</h3>
+
+          <pre><code class="language-bash">npm install @next/mdx @mdx-js/loader gray-matter reading-time
+npm install --save-dev @types/mdx</code></pre>
+
+          <h3>Configure Next.js</h3>
+
+          <pre><code class="language-javascript">// next.config.js
+import createMDX from '@next/mdx';
+
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+});
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  images: {
+    domains: ['images.unsplash.com'],
+    formats: ['image/avif', 'image/webp'],
+  },
+};
+
+export default withMDX(nextConfig);</code></pre>
+
+          <h2>Step 2: Create Blog Data Layer</h2>
+
+          <h3>Blog Utilities</h3>
+
+          <pre><code class="language-typescript">// lib/blog.ts
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import { cache } from 'react';
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  date: string;
+  excerpt: string;
+  tags: string[];
+  author: string;
+  image: string;
+  content: string;
+  readingTime: number;
+}
+
+const postsDirectory = path.join(process.cwd(), 'content/posts');
+
+// Cache the post fetching function
+export const getAllPosts = cache(async (): Promise&lt;BlogPost[]&gt; =&gt; {
+  const fileNames = fs.readdirSync(postsDirectory);
+
+  const posts = await Promise.all(
+    fileNames.map(async (fileName) =&gt; {
+      const slug = fileName.replace(/\.mdx?$/, '');
+      const post = await getPostBySlug(slug);
+      return post;
+    }),
+  );
+
+  // Sort by date
+  return posts.sort((a, b) =&gt; new Date(b.date).getTime() - new Date(a.date).getTime());
+});
+
+export const getPostBySlug = cache(async (slug: string): Promise&lt;BlogPost&gt; =&gt; {
+  const realSlug = slug.replace(/\.mdx?$/, '');
+  const fullPath = path.join(postsDirectory, `${realSlug}.mdx`);
+  const fileContents = fs.readFileSync(fullPath, 'utf8');
+
+  const { data, content } = matter(fileContents);
+
+  // Calculate reading time (200 words per minute)
+  const wordsPerMinute = 200;
+  const wordCount = content.split(/\s+/g).length;
+  const readingTime = Math.ceil(wordCount / wordsPerMinute);
+
+  return {
+    slug: realSlug,
+    title: data.title,
+    date: data.date,
+    excerpt: data.excerpt,
+    tags: data.tags || [],
+    author: data.author,
+    image: data.image,
+    content,
+    readingTime,
+  };
+});
+
+export async function getPostsByTag(tag: string): Promise&lt;BlogPost[]&gt; {
+  const posts = await getAllPosts();
+  return posts.filter((post) =&gt; post.tags.includes(tag));
+}</code></pre>
+
+          <h2>Step 3: Create Blog Pages</h2>
+
+          <h3>Blog Listing Page</h3>
+
+          <pre><code class="language-typescript">// app/blog/page.tsx
+import { getAllPosts } from '@/lib/blog';
+import Link from 'next/link';
+import Image from 'next/image';
+
+export const revalidate = 3600; // Revalidate every hour
+
+export default async function BlogPage() {
+  const posts = await getAllPosts();
+
+  return (
+    &lt;div className="container mx-auto px-4 py-8"&gt;
+      &lt;h1 className="text-4xl font-bold mb-8"&gt;Blog&lt;/h1&gt;
+
+      &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
+        {posts.map((post) =&gt; (
+          &lt;article key={post.slug} className="card"&gt;
+            &lt;Link href={`/blog/${post.slug}`}&gt;
+              &lt;Image
+                src={post.image}
+                alt={post.title}
+                width={400}
+                height={250}
+                className="rounded-t-lg"
+              /&gt;
+              &lt;div className="p-4"&gt;
+                &lt;h2 className="text-xl font-semibold mb-2"&gt;{post.title}&lt;/h2&gt;
+                &lt;p className="text-gray-600 mb-2"&gt;{post.excerpt}&lt;/p&gt;
+                &lt;div className="flex items-center justify-between text-sm text-gray-500"&gt;
+                  &lt;span&gt;{post.date}&lt;/span&gt;
+                  &lt;span&gt;{post.readingTime} min read&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div className="mt-2 flex flex-wrap gap-1"&gt;
+                  {post.tags.map(tag =&gt; (
+                    &lt;span key={tag} className="tag"&gt;#{tag}&lt;/span&gt;
+                  ))}
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/Link&gt;
+          &lt;/article&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+          <h3>Individual Blog Post</h3>
+
+          <pre><code class="language-typescript">// app/blog/[slug]/page.tsx
+import { getPostBySlug, getAllPosts } from '@/lib/blog';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+
+// Generate static params for all posts
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }));
+}
+
+// ISR: Revalidate after 60 seconds
+export const revalidate = 60;
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const post = await getPostBySlug(params.slug);
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: [post.image],
+    },
+  };
+}
+
+// Custom MDX components
+const components = {
+  Image,
+  // Add more custom components as needed
+};
+
+export default async function BlogPostPage({
+  params
+}: {
+  params: { slug: string }
+}) {
+  const post = await getPostBySlug(params.slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  return (
+    &lt;article className="container mx-auto px-4 py-8 max-w-4xl"&gt;
+      &lt;header className="mb-8"&gt;
+        &lt;h1 className="text-4xl font-bold mb-4"&gt;{post.title}&lt;/h1&gt;
+
+        &lt;div className="flex items-center gap-4 text-gray-600 mb-4"&gt;
+          &lt;span&gt;By {post.author}&lt;/span&gt;
+          &lt;span&gt;&amp;bull;&lt;/span&gt;
+          &lt;time&gt;{post.date}&lt;/time&gt;
+          &lt;span&gt;&amp;bull;&lt;/span&gt;
+          &lt;span&gt;{post.readingTime} min read&lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;div className="flex gap-2 mb-6"&gt;
+          {post.tags.map(tag =&gt; (
+            &lt;Link
+              key={tag}
+              href={`/blog/tag/${tag}`}
+              className="tag hover:bg-gray-200"
+            &gt;
+              #{tag}
+            &lt;/Link&gt;
+          ))}
+        &lt;/div&gt;
+
+        &lt;Image
+          src={post.image}
+          alt={post.title}
+          width={1200}
+          height={630}
+          className="rounded-lg w-full"
+          priority
+        /&gt;
+      &lt;/header&gt;
+
+      &lt;div className="prose prose-lg max-w-none"&gt;
+        &lt;MDXRemote source={post.content} components={components} /&gt;
+      &lt;/div&gt;
+    &lt;/article&gt;
+  );
+}</code></pre>
+
+          <h2>Step 4: Implement Revalidation</h2>
+
+          <h3>Revalidation API Endpoint</h3>
+
+          <pre><code class="language-typescript">// app/api/revalidate/route.ts
+import { revalidatePath, revalidateTag } from 'next/cache';
+import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
+
+// Verify HMAC signature for security
+function verifySignature(body: string, signature: string, secret: string) {
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(body);
+  const expectedSignature = hmac.digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // Get signature from header
+    const signature = request.headers.get('x-revalidate-signature');
+    const secret = process.env.REVALIDATE_SECRET!;
+
+    if (!signature) {
+      return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
+    }
+
+    // Get and verify body
+    const body = await request.text();
+    const data = JSON.parse(body);
+
+    if (!verifySignature(body, signature, secret)) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
+
+    // Revalidate based on type
+    const { type, value } = data;
+
+    if (type === 'path') {
+      // Revalidate specific path
+      revalidatePath(value);
+      return NextResponse.json({
+        revalidated: true,
+        type: 'path',
+        value,
+      });
+    } else if (type === 'tag') {
+      // Revalidate by tag
+      revalidateTag(value);
+      return NextResponse.json({
+        revalidated: true,
+        type: 'tag',
+        value,
+      });
+    } else if (type === 'all') {
+      // Revalidate everything
+      revalidatePath('/blog');
+      return NextResponse.json({
+        revalidated: true,
+        type: 'all',
+      });
+    }
+
+    return NextResponse.json({ error: 'Invalid revalidation type' }, { status: 400 });
+  } catch (error) {
+    console.error('Revalidation error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}</code></pre>
+
+          <h3>Revalidation Script</h3>
+
+          <pre><code class="language-javascript">// scripts/revalidate.js
+const crypto = require('crypto');
+const fetch = require('node-fetch');
+
+async function revalidate(type, value) {
+  const url = 'https://your-app.example.com/api/revalidate';
+  const secret = process.env.REVALIDATE_SECRET;
+
+  const body = JSON.stringify({ type, value });
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(body);
+  const signature = hmac.digest('hex');
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-revalidate-signature': signature,
+    },
+    body,
+  });
+
+  const result = await response.json();
+  console.log('Revalidation result:', result);
+}
+
+// Usage
+// revalidate('path', '/blog/my-post');
+// revalidate('tag', 'javascript');
+// revalidate('all', null);</code></pre>
+
+          <h2>Step 5: Deploy to Yandex Cloud</h2>
+
+          <h3>Build and Package</h3>
+
+          <pre><code class="language-bash"># Build the blog
+npm run build
+
+# Package for YC
+yc-opennext build \
+  --project . \
+  --output ./yc-build \
+  --standalone
+
+# Upload to YC
+yc-opennext upload \
+  --build-dir ./yc-build \
+  --bucket blog-assets \
+  --cache-bucket blog-cache \
+  --prefix v1</code></pre>
+
+          <h3>Terraform Configuration</h3>
+
+          <pre><code class="language-hcl"># terraform/main.tf
+module "blog" {
+  source = "github.com/yc-opennext/yc-opennext//terraform/modules/nextjs_yc"
+
+  app_name    = "my-blog"
+  env         = "production"
+  cloud_id    = var.cloud_id
+  folder_id   = var.folder_id
+  domain_name = "blog.example.com"
+  build_id    = "v1"
+  manifest_path = "./yc-build/deploy.manifest.json"
+
+  # Enable ISR with YDB
+  enable_isr = true
+
+  # Cache configuration
+  cache_ttl_days = 30
+
+  # Function configuration for blog
+  function_memory = {
+    server = 512  # Sufficient for blog
+    image  = 256
+  }
+
+  function_timeout = {
+    server = 30
+    image  = 30
+  }
+
+  # Optimize for read-heavy workload
+  prepared_instances = {
+    server = 1
+    image  = 0
+  }
+}</code></pre>
+
+          <h3>Deploy</h3>
+
+          <pre><code class="language-bash">terraform init
+terraform apply</code></pre>
+
+          <h2>Step 6: Set Up CMS Integration (Optional)</h2>
+
+          <h3>Webhook from CMS</h3>
+
+          <p>Configure your CMS to call the revalidation endpoint when content changes:</p>
+
+          <pre><code class="language-javascript">// CMS webhook handler example
+async function onContentUpdate(event) {
+  const { type, slug, tags } = event;
+
+  if (type === 'post.updated') {
+    // Revalidate the specific post
+    await callRevalidateAPI('path', `/blog/${slug}`);
+
+    // Revalidate tags
+    for (const tag of tags) {
+      await callRevalidateAPI('tag', tag);
+    }
+
+    // Revalidate blog listing
+    await callRevalidateAPI('path', '/blog');
+  }
+}</code></pre>
+
+          <h2>Performance Optimizations</h2>
+
+          <h3>1. Optimize Images</h3>
+
+          <pre><code class="language-typescript">// Use Next.js Image with proper sizing
+&lt;Image
+  src={post.image}
+  alt={post.title}
+  width={1200}
+  height={630}
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  priority={index &lt; 3} // Priority for above-fold images
+/&gt;</code></pre>
+
+          <h3>2. Implement Pagination</h3>
+
+          <pre><code class="language-typescript">// app/blog/page.tsx with pagination
+export default async function BlogPage({ searchParams }: { searchParams: { page?: string } }) {
+  const page = parseInt(searchParams.page || '1');
+  const postsPerPage = 9;
+  const posts = await getAllPosts();
+
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+  const paginatedPosts = posts.slice((page - 1) * postsPerPage, page * postsPerPage);
+
+  // Render paginated posts...
+}</code></pre>
+
+          <h3>3. Add Search</h3>
+
+          <pre><code class="language-typescript">// lib/search.ts
+export async function searchPosts(query: string) {
+  const posts = await getAllPosts();
+
+  return posts.filter(
+    (post) =&gt;
+      post.title.toLowerCase().includes(query.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
+      post.tags.some((tag) =&gt; tag.toLowerCase().includes(query.toLowerCase())),
+  );
+}</code></pre>
+
+          <h2>Monitoring</h2>
+
+          <h3>Track Cache Performance</h3>
+
+          <pre><code class="language-typescript">// lib/cache.ts
+export async function getCacheStats() {
+  // Query YDB for cache hit/miss rates
+  const stats = await queryYDB(
+    `
+    SELECT COUNT(*) as total,
+           SUM(CASE WHEN hit = true THEN 1 ELSE 0 END) as hits
+    FROM cache_logs
+    WHERE timestamp &gt; ?
+  `,
+    [Date.now() - 86400000],
+  ); // Last 24 hours
+
+  return {
+    hitRate: (stats.hits / stats.total) * 100,
+    total: stats.total,
+  };
+}</code></pre>
+
+          <h2>Conclusion</h2>
+
+          <p>This blog implementation demonstrates:</p>
+
+          <ul>
+            <li>ISR for optimal performance</li>
+            <li>On-demand revalidation for fresh content</li>
+            <li>Tag-based invalidation for related content</li>
+            <li>SEO optimization with metadata</li>
+            <li>Image optimization</li>
+            <li>MDX for rich content</li>
+          </ul>
+
+          <p>The blog will perform excellently on Yandex Cloud with:</p>
+
+          <ul>
+            <li>Fast initial loads from cache</li>
+            <li>Automatic background regeneration</li>
+            <li>Efficient cache invalidation</li>
+            <li>Scalable to millions of posts</li>
+          </ul>
+
+          <!-- Previous/Next Navigation -->
+          <div class="page-nav">
+            <a href="/architecture.html" class="prev">
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">System Architecture</span>
+            </a>
+            <a href="/reference/troubleshooting.html" class="next">
+              <span class="nav-label">Next</span>
+              <span class="nav-title">Troubleshooting</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/docs.html">Documentation</a></li>
+            <li><a href="/examples/blog-with-isr.html">Examples</a></li>
+            <li><a href="/architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="/getting-started/quick-start.html">Quick Start</a></li>
+            <li><a href="/api/cli-commands.html">CLI Reference</a></li>
+            <li><a href="/guides/migration-from-vercel.html">Migration Guide</a></li>
+            <li><a href="/reference/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul class="footer-links">
+            <li><a href="https://github.com/yc-opennext/yc-opennext" target="_blank">GitHub</a></li>
+            <li>
+              <a href="https://github.com/yc-opennext/yc-opennext/discussions" target="_blank"
+                >Discussions</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 YC-OpenNext. All rights reserved. | MIT License</p>
+      </div>
+    </footer>
+
+    <button
+      class="sidebar-toggle"
+      onclick="document.querySelector('.sidebar').classList.toggle('open')"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script>
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      });
+    </script>
+  </body>
+</html>

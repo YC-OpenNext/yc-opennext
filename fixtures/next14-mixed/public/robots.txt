@@ -1,0 +1,15 @@
+# robots.txt for Next.js 14 Test Fixture
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /api/
+Disallow: /dashboard/
+
+# Sitemap location (update with actual domain in production)
+Sitemap: https://example.com/sitemap.xml
+
+# Crawl-delay for specific bots (optional)
+# User-agent: Googlebot
+# Crawl-delay: 10
