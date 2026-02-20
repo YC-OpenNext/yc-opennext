@@ -1,13 +1,11 @@
 name: CI
 
 on:
-  push:
-    branches: [main, develop]
   pull_request:
     branches: [main]
 
 env:
-  NODE_VERSION: 18
+  NODE_VERSION: 22
 
 jobs:
   lint:
@@ -78,14 +76,6 @@ jobs:
 
       - name: Build packages
         run: pnpm build
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            packages/*/dist
-            !**/node_modules
 
   test-fixtures:
     name: Test Fixtures
@@ -169,80 +159,3 @@ jobs:
         if: always()
         with:
           sarif_file: trivy-results.sarif
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    needs: [lint, test, build, test-fixtures, terraform, security]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-          run_install: false
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://npm.pkg.github.com'
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Build packages
-        run: pnpm build
-
-      - name: Configure npm for GitHub Packages
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-          echo "@yc-opennext:registry=https://npm.pkg.github.com" >> ~/.npmrc
-
-      - name: Publish to GitHub Packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Get the current version from package.json
-          VERSION=$(node -p "require('./package.json').version")
-
-          # Publish CLI package
-          cd packages/yc-opennext
-          npm version $VERSION --no-git-tag-version --allow-same-version
-          npm publish --access public
-          cd ../..
-
-          # Publish Runtime package
-          cd packages/yc-runtime
-          npm version $VERSION --no-git-tag-version --allow-same-version
-          npm publish --access public
-          cd ../..
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
-          body: |
-            ## 🚀 Release v${{ github.run_number }}
-
-            ### Packages Published to GitHub Packages
-            - `@yc-opennext/cli`
-            - `@yc-opennext/runtime`
-
-            ### Installation
-            ```bash
-            npm install @yc-opennext/cli@latest
-            npm install @yc-opennext/runtime@latest
-            ```
-
-            ### Changes
-            ${{ github.event.head_commit.message }}
-          draft: false
-          prerelease: false
